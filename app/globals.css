@@ -23,12 +23,13 @@
   --font-sans: "Lexend",  sans-serif;
   --color-blanco: var(--blanco);
   --color-negro: var(--negro);
-  --color-green: var(--verde);
+  --color-verde: var(--verde);
   --color-rojo: var(--rojo);
   --color-amarillo: var(--amarillo);
   --color-gris: var(--gris);
   --color-verdeClaro: var(--verdeClaro);
   --color-rojoClaro: var(--rojoClaro);
+
 }
 
 /* @media (prefers-color-scheme: dark) {

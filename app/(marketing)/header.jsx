@@ -1,13 +1,17 @@
+"use client";
+import { ClerkLoading, ClerkLoaded, SignedIn,  SignedOut, UserButton, SignInButton} from "@clerk/nextjs";
+import { Loader } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@heroui/react";
 
 export const Header = () => {
   return (
     <header className="h-20 w-full border-b-2 border-slate-200 px-4">
-      <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full bg-red-500">
+      <div className="lg:max-w-screen-xl mx-auto flex items-center justify-between h-full">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <Image src="/mascot.svg" alt="Mascot" height={40} width={40} />
-          <h1 className="text-2xl text-green-600 tracking-wide font-extrabold">
-            DuoLingo
+          <Image src="/logo.svg" alt="Mascot" height={40} width={40} />
+          <h1 className="text-2xl text-verde tracking-wide font-extrabold">
+            Lectio
           </h1>
         </div>
         <ClerkLoading>
@@ -15,7 +19,7 @@ export const Header = () => {
         </ClerkLoading>
         <ClerkLoaded>
           <SignedIn>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton/>
           </SignedIn>
           <SignedOut>
             <SignInButton
@@ -23,8 +27,8 @@ export const Header = () => {
               afterSignInUrl="/learn"
               afterSignUpUrl="/learn"
             >
-              <Button size="lg" variant="ghost">
-                Login
+              <Button size="lg" variant="light">
+                Ingresar sesión
               </Button>
             </SignInButton>
           </SignedOut>

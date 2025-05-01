@@ -1,7 +1,6 @@
 import { Header } from "./header";
 import { Footer } from "./footer";
 
-
 const MarketingLayout = ({children}) => {
   return (
     <div className="flex min-h-screen flex-col">
@@ -9,7 +8,7 @@ const MarketingLayout = ({children}) => {
       <main className="flex flex-1 flex-col items-center justify-center">
         {children}
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
