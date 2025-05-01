@@ -43,3 +43,9 @@ body {
   background: var(--blanco);
   color: var(--negro);
 }
+
+@layer utilities {
+  .paused {
+    animation-play-state: paused;
+  }
+}

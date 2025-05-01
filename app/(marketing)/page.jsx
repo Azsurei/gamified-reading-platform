@@ -13,8 +13,8 @@ import Image from "next/image";
 export default function Home() {
   return (
     <section className="relative overflow-hidden px-4 pb-8 pt-32 lg:pt-24">
-      <div className="flex items-center justify-center">
-        <Image
+      <div className="flex items-center justify-center  animate-bounce">
+      <Image
           src="/logo.svg"
           alt="Mascot"
           width={200} // default width
