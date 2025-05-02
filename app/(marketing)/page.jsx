@@ -5,16 +5,18 @@ import {
   SignedOut,
   SignInButton,
   SignUpButton,
+  ClerkLoading,
 } from "@clerk/nextjs";
 import { Button } from "@heroui/react";
-import NextLink from "next/link";
+import Link from "next/link";
 import Image from "next/image";
+import { Loader } from "lucide-react";
 
 export default function Home() {
   return (
     <section className="relative overflow-hidden px-4 pb-8 pt-32 lg:pt-24">
       <div className="flex items-center justify-center  animate-bounce">
-      <Image
+        <Image
           src="/logo.svg"
           alt="Mascot"
           width={200} // default width
@@ -34,37 +36,38 @@ export default function Home() {
           </span>
         </span>
       </h1>
-      <div className="mx-auto my-12 min-h-40 max-w-80">
+      <div className="mx-auto my-12 min-h-40 max-w-80 flex flex-col gap-3 items-center justify-center">
+        <ClerkLoading>
+          <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
+        </ClerkLoading>
         <ClerkLoaded>
           <SignedOut>
-            <div className="flex flex-col gap-3">
-              <SignUpButton mode="modal">
-                <Button
-                  size="lg"
-                  className="w-full bg-verdeClaro text-blanco h-[56px]"
-                >
-                  <span className="truncate">Comienza ahora</span>
-                </Button>
-              </SignUpButton>
-              <SignInButton mode="modal">
-                <Button
-                  size="lg"
-                  className="w-full text-gris h-[56px]"
-                  variant="ghost"
-                >
-                  <span className="truncate">Ya tengo una cuenta</span>
-                </Button>
-              </SignInButton>
-            </div>
+            <SignUpButton mode="modal">
+              <Button
+                size="lg"
+                className="w-full bg-verdeClaro text-blanco h-[56px]"
+              >
+                <span className="truncate">Comienza ahora</span>
+              </Button>
+            </SignUpButton>
+            <SignInButton mode="modal">
+              <Button
+                size="lg"
+                className="w-full text-gris h-[56px]"
+                variant="ghost"
+              >
+                <span className="truncate">Ya tengo una cuenta</span>
+              </Button>
+            </SignInButton>
           </SignedOut>
           <SignedIn>
             <Button
+              as={Link}
+              href="/lecturas"
               size="lg"
               className="w-full bg-verdeClaro text-blanco h-[56px]"
             >
-              <NextLink href="/learn" className="truncate">
-                Sigue aprendiendo
-              </NextLink>
+              Sigue aprendiendo
             </Button>
           </SignedIn>
         </ClerkLoaded>

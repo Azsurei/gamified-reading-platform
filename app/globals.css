@@ -29,7 +29,9 @@
   --color-gris: var(--gris);
   --color-verdeClaro: var(--verdeClaro);
   --color-rojoClaro: var(--rojoClaro);
-
+  --color-primary: var(--color-verde);
+  --color-secondary: var(--negro);
+  
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -42,6 +44,7 @@
 body {
   background: var(--blanco);
   color: var(--negro);
+  @apply h-full;
 }
 
 @layer utilities {
