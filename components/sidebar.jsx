@@ -28,8 +28,8 @@ const Sidebar = ({ className }) => {
       </Link>
       <div className="flex flex-col gap-y-4 flex-1">
         <SidebarItem label={"Lecturas"} href={"/lecturas"} Icon={BookIcon}></SidebarItem>
-        <SidebarItem label={"Clasificación"} href={"/clasificación"} Icon={TrophyIcon}></SidebarItem>
-        <SidebarItem label={"Desafíos"} href={"/desafíos"} Icon={SwordsIcon}></SidebarItem>
+        <SidebarItem label={"Clasificación"} href={"/clasificacion"} Icon={TrophyIcon}></SidebarItem>
+        <SidebarItem label={"Desafíos"} href={"/desafios"} Icon={SwordsIcon}></SidebarItem>
         <SidebarItem label={"Tienda"} href={"/tienda"} Icon={StoreIcon}></SidebarItem>
         <SidebarItem label={"Perfil"} href={"/perfil"} Icon={UserIcon}></SidebarItem>
       </div>

@@ -7,7 +7,7 @@ const MainLayout = ({ children }) => {
       <MobileHeader />
       <Sidebar className="hidden lg:flex" />
       <main className="h-full pt-[50px] lg:pl-[256px] lg:pt-0">
-        <div className="mx-auto h-full pt-8">
+        <div className="mx-auto h-full pt-6">
           {children}
         </div>
       </main>

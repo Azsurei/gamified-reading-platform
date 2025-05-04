@@ -10,7 +10,7 @@ const SidebarItem = ({ label, Icon, href }) => {
     <Link href={href} className="w-full">
       <Button
         variant={active ? "ghost" : "light"}
-        className="justify-start h-[52px] w-full"
+        className="justify-start h-[52px] w-full font-semibold text-lg"
         color={active ? "primary" : "secondary"}
       >
         <Icon stroke={active ? "#1FDB70" : "#333"} className="mr-5" />
