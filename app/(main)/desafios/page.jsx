@@ -85,7 +85,7 @@ const DesafiosPage = () => {
           alt={"Desafíos"}
           className="w-[90px] h-[90px] rounded-lg object-cover"
         />
-        <h1 className="lg:text-[40px] font-bold text-gray-800 text-center text-2xl md:text-[30px]">
+        <h1 className="lg:text-[40px] font-bold text-negro text-center text-2xl md:text-[30px]">
           Desafíos
         </h1>
         <p className="text-md text-gray-500 font-semibold text-center">
@@ -105,10 +105,10 @@ const DesafiosPage = () => {
             >
               <div className="flex-1 pr-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-semibold text-gray-800 mb-1">
+                  <p className="font-semibold text-negro mb-1">
                     {desafio.titulo}
                   </p>
-                  <span className="text-sm text-gray-600 font-semibold">
+                  <span className="text-sm text-negro font-semibold">
                     {desafio.progresoActual}/{desafio.progresoTotal}
                   </span>
                 </div>

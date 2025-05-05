@@ -57,7 +57,7 @@ export default function ClasificationTable() {
           alt={"Trophy"}
           className="w-[90px] h-[90px] rounded-lg object-cover"
         />
-        <h1 className="lg:text-[40px] font-bold text-gray-800 text-center text-2xl md:text-[30px]">
+        <h1 className="lg:text-[40px] font-bold text-negro text-center text-2xl md:text-[30px]">
           Tabla de Clasificación
         </h1>
         <p className="text-md text-gray-500 font-semibold">Se reinicia en 1 semana</p>
@@ -111,10 +111,10 @@ export default function ClasificationTable() {
                           {item.initials}
                         </div>
                       )}
-                      <span className="text-sm lg:text-lg font-semibold">{item.name}</span>
+                      <span className="text-sm lg:text-lg font-semibold text-negro">{item.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-semibold text-sm lg:text-lg">{item.xp} XP</TableCell>
+                  <TableCell className="text-right font-semibold text-sm lg:text-lg "><span className="text-negro">{item.xp} XP</span></TableCell>
                 </TableRow>
               );
             })}

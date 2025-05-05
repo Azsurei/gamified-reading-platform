@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@heroui/react";
 import { Button } from "@heroui/react";
+import Link from "next/link";
 
 const categories = [
   { id: "all", label: "Todas" },
@@ -109,7 +110,7 @@ const LearnPage = () => {
   };
 
   return (
-    <div className="w-full px-8">
+    <div className="w-full px-8 pb-12">
       {/* Búsqueda */}
       <div className="w-full border-b border-gray-200 pb-4 ">
         <Input
@@ -130,7 +131,7 @@ const LearnPage = () => {
               className={`px-4 py-2 font-semibold whitespace-nowrap rounded-[10px] border text-md ${
                 selectedCategory === item.id
                   ? "bg-primary text-white border-primary"
-                  : "bg-white text-gray-700 border-gris"
+                  : "bg-white text-negro border-gris"
               }`}
             >
               {item.label}
@@ -143,20 +144,24 @@ const LearnPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {filterLectures(selectedCategory).length > 0 ? (
           filterLectures(selectedCategory).map((lecture, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition"
-            >
-              <img
-                src={lecture.image}
-                alt={lecture.title}
-                className="w-[96px] h-[96px] rounded-lg object-cover"
-              />
-              <div>
-                <h3 className="text-lg font-semibold">{lecture.title}</h3>
-                <p className="text-sm text-gray-600">{lecture.description}</p>
+            <Link href={`/lecturas/${i}`} key={i}>
+              <div
+                key={i}
+                className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20"
+              >
+                <img
+                  src={lecture.image}
+                  alt={lecture.title}
+                  className="w-[96px] h-[96px] rounded-lg object-cover"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-negro">
+                    {lecture.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 text-justify">{lecture.description}</p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <p className="text-gray-500 mt-4">No se encontraron lecturas.</p>
