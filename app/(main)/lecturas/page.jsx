@@ -16,6 +16,7 @@ const categories = [
 
 const allLectures = [
   {
+    
     title: "El horizonte de eventos: la frontera que marca el destino",
     description:
       "Breve texto científico sobre el horizonte de eventos de un agujero negro. ",

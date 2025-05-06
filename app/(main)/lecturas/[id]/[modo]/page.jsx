@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 
 const lecturaMock = {
-  id: "horizonte-de-eventos",
+  id: "0",
   titulo: "El horizonte de eventos: la frontera que marca el destino",
   contenido: `
     Un agujero negro es un objeto astronómico con una gravedad tan intensa que nada puede escapar de su interior, ni siquiera la luz. 
@@ -15,35 +15,54 @@ Uno de los conceptos más fascinantes y desafiantes al estudiar los agujeros neg
 El estudio del horizonte de eventos ha llevado a grandes debates entre los científicos, especialmente cuando se mezcla con la mecánica cuántica. Uno de los más conocidos es la llamada paradoja de la información: si todo lo que entra en un agujero negro desaparece, ¿qué sucede con la información que contenía? ¿Se destruye para siempre? Esto desafía las leyes de la física, que afirman que la información no puede perderse. Además, los físicos han descubierto que cuando la materia se acerca al horizonte de eventos, experimenta fenómenos extremos: el tiempo se desacelera desde el punto de vista de un observador externo, y la materia puede alcanzar temperaturas muy altas. Todo esto hace que el horizonte de eventos no solo sea una frontera física, sino también una frontera del conocimiento humano, donde las leyes conocidas de la ciencia comienzan a encontrarse con sus propios límites.
   `,
   imagen: "/agujero-negro.svg",
+  preguntas: [
+    {
+      id: "p1",
+      tipo: "seleccion",
+      contenido: "¿Qué es un agujero negro?",
+      alternativas: [
+        "Una región en el espacio donde la gravedad es tan fuerte que nada puede escapar.",
+        "Una estrella que brilla intensamente en el cielo nocturno.",
+        "Una galaxia con una gran cantidad de estrellas.",
+        "Un tipo de planeta en el borde de un sistema solar.",
+      ],
+      respuestaCorrecta:
+        "Una región en el espacio donde la gravedad es tan fuerte que nada puede escapar.",
+    },
+    {
+      id: "p2",
+      tipo: "completar",
+      contenido:
+        "¿Consideras que el autor logró organizar bien las ideas para explicar un tema tan complejo? ¿Por qué?",
+    },
+    {
+      id: "p3",
+      tipo: "completar",
+      contenido:
+        "¿Recomendarías esta lectura a otros estudiantes? Justifica tu respuesta considerando el contenido, el estilo del autor y lo que más te llamó la atención del texto.",
+    },
+  ],
 };
 
 const ModoPage = () => {
+  const router = useRouter();
+
+  const handleResponder = () => {
+    const primeraPregunta = lecturaMock.preguntas[0];
+
+    if (!primeraPregunta) return;
+
+    const { tipo, id: preguntaId } = primeraPregunta;
+    const modo = "aprendizaje";
+
+
+    router.push(`/lecturas/${lecturaMock.id}/${modo}/${tipo}/${preguntaId}`);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header con imagen, título y botón de regreso */}
-      <div className="flex p-4 items-center justify-between">
-        <div className="flex items-center">
-          <img
-            src={lecturaMock.imagen}
-            alt={lecturaMock.titulo}
-            className="w-[76px] h-[76px] object-cover"
-          />
-          <div className="px-4 py-2 rounded">
-            <h1 className="hidden sm:block text-sm lg:text-lg font-semibold">{lecturaMock.titulo}</h1>
-          </div>
-        </div>
-        <Link href={"/lecturas"}>
-          <Button
-            className=" bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
-          >
-            ←
-          </Button>
-        </Link>
-      </div>
-
-      {/* Contenido de la lectura */}
-      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto">
+    <>
+      {/* Contenido */}
+      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto overflow-y-auto">
         <h2 className="text-base lg:text-2xl font-bold text-negro mb-4">
           {lecturaMock.titulo}
         </h2>
@@ -53,16 +72,16 @@ const ModoPage = () => {
       </div>
 
       {/* Botón de responder */}
-      <div className="px-6 pb-8 mx-auto">
+      <div className="px-6 pb-8 mx-auto flex justify-center">
         <Button
-          className=" hover:bg-verdeClaro text-white font-semibold py-3 rounded-lg transition w-[222px] h-[52px] text-sm lg:text-lg"
-          onPress={() => alert("Redirigir a preguntas...")}
+          className="hover:bg-verdeClaro text-white font-semibold py-3 rounded-lg transition w-[222px] h-[52px] text-sm lg:text-lg"
+          onPress={handleResponder}
           color="primary"
         >
           Responder
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

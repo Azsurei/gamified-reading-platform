@@ -13,7 +13,7 @@ const ModoSeleccion = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="text-2xl lg:text-[40px] font-bold mb-10">Selecciona un modo</h1>
+        <h1 className="text-2xl lg:text-[40px] font-b old mb-10">Selecciona un modo</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
           <div
             className="bg-verde hover:bg-verdeClaro text-white rounded-xl p-6 cursor-pointer transition"
