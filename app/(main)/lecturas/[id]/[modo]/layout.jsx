@@ -12,7 +12,7 @@ const lecturaMock = {
 
 const LayoutModo = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Header fijo */}
       <div className="flex p-4 items-center justify-between h-24 fixed top-0 w-full bg-white z-10 shadow">
         <div className="flex items-center">
@@ -35,7 +35,7 @@ const LayoutModo = ({ children }) => {
       </div>
 
       {/* Contenido debajo del header */}
-      <div className="mt-24">{children}</div>
+      <div className="mt-24 flex-1">{children}</div>
     </div>
   );
 };

@@ -63,10 +63,10 @@ const ModoPage = () => {
     <>
       {/* Contenido */}
       <div className="flex-1 px-6 py-6 max-w-3xl mx-auto overflow-y-auto">
-        <h2 className="text-base lg:text-2xl font-bold text-negro mb-4">
+        <h2 className="text-base lg:text-2xl font-normal text-negro mb-4 text-center">
           {lecturaMock.titulo}
         </h2>
-        <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-semibold text-justify">
+        <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-normal text-justify">
           {lecturaMock.contenido}
         </p>
       </div>

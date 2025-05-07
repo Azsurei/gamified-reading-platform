@@ -17,6 +17,7 @@ const preguntaMock = {
   ],
   respuestaCorrecta:
     "Una región en el espacio donde la gravedad es tan fuerte que nada puede escapar.",
+  dificultad: "Fácil",
 };
 
 const PreguntaSeleccion = () => {
@@ -35,55 +36,64 @@ const PreguntaSeleccion = () => {
   const progreso = 33; // Suponiendo que estamos en el primer paso de un total de 3
 
   return (
-    <div className="flex-1 px-6 pt-28 pb-8 max-w-3xl mx-auto">
+    <div className="px-6 py-4 lg:py-8 max-w-3xl mx-auto h-full flex flex-col">
       {/* Progreso usando HeroUI */}
-      <div className="mb-6">
-        <span className="text-sm font-semibold text-gray-600">
-          Dificultad: <span className="text-green-600">Fácil</span>
-        </span>
+      <div className="mb-5 lg:mb-10">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-negro">
+            Dificultad:{" "}
+            <span >{preguntaMock.dificultad}</span>
+          </span>
+          <p className="text-right text-sm font-semibold text-negro">1/3</p>
+        </div>
         <Progress value={progreso} max={100} className="mt-2" color="success" />
-        <p className="text-right text-xs mt-1">1/3</p>
       </div>
 
       {/* Pregunta */}
-      <h2 className="text-lg lg:text-2xl font-bold mb-6">
+      <h2 className="text-lg lg:text-2xl font-normal mb-5 lg:mb-10 text-center">
         {preguntaMock.contenido}
       </h2>
 
-      {/* Alternativas */}
-      <div className="space-y-4 mb-8">
-        {preguntaMock.alternativas.map((alt, idx) => (
-          <button
-            key={idx}
-            onClick={() => setSeleccion(alt)}
-            className={`w-full flex items-start p-4 border rounded-xl text-left transition hover:bg-gray-50 ${
-              seleccion === alt
-                ? "border-green-500 bg-green-50"
-                : "border-gray-300"
-            }`}
-          >
-            <span className="mr-4 font-bold">{letras[idx]}</span>
-            <span>{alt}</span>
-          </button>
-        ))}
-      </div>
+      <div className="flex flex-col justify-between flex-1 text-xs lg:text-base">
+        {/* Alternativas */}
+        <div className="space-y-4 mb-8">
+          {preguntaMock.alternativas.map((alt, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSeleccion(alt)}
+              className={`w-full flex items-start p-4 border rounded-xl text-left transition ${
+                seleccion === alt
+                  ? "border-verde bg-verdeClaro text-white"
+                  : "border-gris"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="font-normal border w-[30px] h-[30px] rounded-xl flex justify-center items-center border-gris">
+                  {letras[idx]}
+                </div>
+                <div className="flex-1">{alt}</div>
+              </div>
+            </button>
+          ))}
+        </div>
 
-      {/* Botones */}
-      <div className="flex justify-between">
-        {/* Botón de volver a la lectura */}
-        <Link href={`/lecturas/${id}/${modo}`}>
-          <Button variant="outline" className="cursor-pointer">
-            Volver a la lectura
+        {/* Botones */}
+        <div className="flex justify-between">
+          {/* Botón de volver a la lectura */}
+          <Link href={`/lecturas/${id}/${modo}`}>
+            <Button
+              variant="ghost"
+              className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] text-gris border-gris hover:bg-grisClaro lg:w-[222px] lg:h-[52px]"
+            >
+              Volver a la lectura
+            </Button>
+          </Link>
+
+          {/* Botón de verificar */}
+          <Button className="bg-verde hover:bg-verdeClaro text-white font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg  w-[150px] h-[44px] lg:w-[222px] lg:h-[52px]">
+            Verificar
           </Button>
-        </Link>
-
-        {/* Botón de verificar */}
-        <Button
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg"
-          disabled={!seleccion}
-        >
-          Verificar
-        </Button>
+        </div>
       </div>
     </div>
   );
