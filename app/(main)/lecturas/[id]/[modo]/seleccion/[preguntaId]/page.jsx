@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button, Progress } from "@heroui/react";
-import { usePathname } from "next/navigation"; // Importamos useRouter
+import { usePathname } from "next/navigation";
 
 const preguntaMock = {
   id: "p1",
@@ -21,30 +21,33 @@ const preguntaMock = {
 };
 
 const PreguntaSeleccion = () => {
-  const pathname = usePathname(); // Usamos useRouter para acceder a la URL
-  console.log("El pathname es ", pathname);
+  const pathname = usePathname();
   const [seleccion, setSeleccion] = useState(null);
+  const [verificado, setVerificado] = useState(false);
+  const [esCorrecta, setEsCorrecta] = useState(false);
   const letras = ["A", "B", "C", "D"];
 
-  // Si la ruta es /lecturas/0/aprendizaje/seleccion/p, entonces sacando el id y mode sería
   const pathParts = pathname.split("/");
-  const id = pathParts[2]; // Extraemos el id (0 en este caso)
-  const modo = pathParts[3]; // Extraemos  el modo (aprendizaje en este caso)
-  console.log("ID:", id, "Modo:", modo);
+  const id = pathParts[2];
+  const modo = pathParts[3];
 
-  // Progreso simulado para el ejemplo (1/3)
-  const progreso = 33; // Suponiendo que estamos en el primer paso de un total de 3
+  const progreso = 33; // Simulado
+
+  const handleVerificar = () => {
+    if (!seleccion) return;
+    setEsCorrecta(seleccion === preguntaMock.respuestaCorrecta);
+    setVerificado(true);
+  };
 
   return (
     <div className="px-6 py-4 lg:py-8 max-w-3xl mx-auto h-full flex flex-col">
-      {/* Progreso usando HeroUI */}
+      {/* Progreso */}
       <div className="mb-5 lg:mb-10">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-negro">
-            Dificultad:{" "}
-            <span >{preguntaMock.dificultad}</span>
+          <span className="text-sm font-normal text-negro">
+            Dificultad: <span>{preguntaMock.dificultad}</span>
           </span>
-          <p className="text-right text-sm font-semibold text-negro">1/3</p>
+          <p className="text-right text-sm font-normal text-negro">1/3</p>
         </div>
         <Progress value={progreso} max={100} className="mt-2" color="success" />
       </div>
@@ -60,12 +63,15 @@ const PreguntaSeleccion = () => {
           {preguntaMock.alternativas.map((alt, idx) => (
             <button
               key={idx}
-              onClick={() => setSeleccion(alt)}
+              onClick={() => {
+                if (!verificado) setSeleccion(alt);
+              }}
               className={`w-full flex items-start p-4 border rounded-xl text-left transition ${
                 seleccion === alt
                   ? "border-verde bg-verdeClaro text-white"
                   : "border-gris"
-              }`}
+              } ${verificado && seleccion !== alt ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={verificado}
             >
               <div className="flex items-center gap-2.5">
                 <div className="font-normal border w-[30px] h-[30px] rounded-xl flex justify-center items-center border-gris">
@@ -77,21 +83,38 @@ const PreguntaSeleccion = () => {
           ))}
         </div>
 
-        {/* Botones */}
-        <div className="flex justify-between">
-          {/* Botón de volver a la lectura */}
-          <Link href={`/lecturas/${id}/${modo}`}>
-            <Button
-              variant="ghost"
-              className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] text-gris border-gris hover:bg-grisClaro lg:w-[222px] lg:h-[52px]"
-            >
-              Volver a la lectura
-            </Button>
-          </Link>
+        {/* Resultado */}
+        {verificado && (
+          <div
+            className={`border-2 rounded-xl px-4 py-3 mb-6 text-center text-sm font-medium ${
+              esCorrecta
+                ? "border-verde text-verde bg-white"
+                : "border-red-500 text-red-500 bg-white"
+            }`}
+          >
+            {esCorrecta ? "¡Respuesta correcta!" : "Respuesta incorrecta"}
+          </div>
+        )}
 
-          {/* Botón de verificar */}
-          <Button className="bg-verde hover:bg-verdeClaro text-white font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg  w-[150px] h-[44px] lg:w-[222px] lg:h-[52px]">
-            Verificar
+        {/* Botones */}
+        <div className={`flex verificado ${verificado ? "justify-end" : "justify-between"}`}> 
+          {!verificado && (
+            <Link href={`/lecturas/${id}/${modo}`}>
+              <Button
+                variant="ghost"
+                className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] text-gris border-gris hover:bg-grisClaro lg:w-[222px] lg:h-[52px]"
+              >
+                Volver a la lectura
+              </Button>
+            </Link>
+          )}
+
+          <Button
+            onPress={verificado ? () => console.log("Continuar...") : handleVerificar}
+            
+            className={`font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] text-white bg-verde hover:bg-verdeClaro`}
+          >
+            {verificado ? "Continuar" : "Verificar"}
           </Button>
         </div>
       </div>

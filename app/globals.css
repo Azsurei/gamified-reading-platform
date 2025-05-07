@@ -31,6 +31,7 @@
   --color-rojoClaro: var(--rojoClaro);
   --color-primary: var(--color-verde);
   --color-secondary: var(--negro);
+  --color-warning: var(--amarillo);
   
 }
 

@@ -22,7 +22,7 @@ const LayoutModo = ({ children }) => {
             className="w-[76px] h-[76px] object-cover"
           />
           <div className="px-4 py-2 rounded">
-            <h1 className="hidden sm:block text-sm lg:text-lg font-semibold">
+            <h1 className="hidden sm:block text-sm lg:text-lg font-normal">
               {lecturaMock.titulo}
             </h1>
           </div>
