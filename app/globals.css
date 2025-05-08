@@ -32,7 +32,7 @@
   --color-primary: var(--color-verde);
   --color-secondary: var(--negro);
   --color-warning: var(--amarillo);
-  
+  --color-danger: var(--rojo);
 }
 
 /* @media (prefers-color-scheme: dark) {
