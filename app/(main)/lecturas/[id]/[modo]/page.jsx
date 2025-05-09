@@ -5,11 +5,14 @@ import { Button, Progress } from "@heroui/react";
 import { PreguntaSeleccion } from "@/components/pregunta-seleccion";
 import { PreguntaCompletar } from "@/components/pregunta-completar";
 import Retroalimentacion from "@/components/retroalimentacion";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 // Simulación de contenido
 const lecturaMock = {
   id: "lect1",
-  titulo: "Los agujeros negros",
+  titulo: "El horizonte de eventos: la frontera que marca el destino",
+  imagen: "/agujero-negro.svg",
   contenido: `
     Un agujero negro es un objeto astronómico con una gravedad tan intensa que nada puede escapar de su interior, ni siquiera la luz. 
 Se forma cuando una estrella muy masiva agota su energía y colapsa sobre sí misma, concentrando toda su masa en un punto extremadamente denso llamado singularidad. Alrededor de este punto se encuentra una región invisible, lo que conocemos como agujero negro. No podemos observarlo directamente porque ni la luz puede salir de él, pero los científicos pueden inferir su presencia observando el comportamiento de la materia y la luz en su entorno, como estrellas que giran de forma extraña o gases que se calientan al acercarse.
@@ -45,6 +48,7 @@ const preguntasMock = [
 ];
 
 const ModoPage = () => {
+  const { modo } = useParams(); // Detecta si el modo es 'aprendizaje'
   const [pasoActual, setPasoActual] = useState(0);
   const [pasoAntesDeLectura, setPasoAntesDeLectura] = useState(null);
   const [respuestas, setRespuestas] = useState({});
@@ -74,39 +78,77 @@ const ModoPage = () => {
     }
   };
 
-  if (mostrarRetroalimentacion) { 
+  if (mostrarRetroalimentacion) {
     return <Retroalimentacion />;
   }
 
   // Layout lectura
   if (pasoActual === 0) {
     return (
-      <>
-        {/* Contenido */}
-        <div className="flex-1 px-6 py-4 lg:py-8 max-w-3xl mx-auto overflow-y-auto">
-          <h2 className="text-base lg:text-2xl font-normal text-negro text-center">
-            {lecturaMock.titulo}
-          </h2>
-          <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-normal text-justify py-6">
-            {lecturaMock.contenido}
-          </p>
-          {/* Botón de responder */}
-          <div className="mx-auto flex justify-center">
-            <Button
-              onPress={
-                pasoAntesDeLectura !== null
-                  ? volverAPreguntaPendiente
-                  : avanzarPaso
-              }
-              className={`font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] transition text-white bg-verde hover:bg-verdeClar`}
-            >
-              {pasoAntesDeLectura !== null
-                ? "Volver a la pregunta"
-                : "Responder"}
-            </Button>
+      <div className="h-full flex flex-col">
+        {/* Header fijo */}
+        <div className="flex p-4 items-center justify-between h-24 fixed top-0 w-full bg-white z-10 shadow">
+          <div className="flex items-center">
+            <img
+              src={lecturaMock.imagen}
+              alt={lecturaMock.titulo}
+              className="w-[76px] h-[76px] object-cover"
+            />
+            <div className="px-4 py-2 rounded">
+              <h1 className="hidden sm:block text-sm lg:text-lg font-normal">
+                {lecturaMock.titulo}
+              </h1>
+            </div>
+          </div>
+          {/* Iconos de comodines solo si el modo es aprendizaje */}
+          {modo === "aprendizaje" && pasoActual === 0 ? (
+            <div className="flex gap-8">
+              <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12" />
+              <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />
+              <img src="/estrella.svg" alt="Estrella" className="w-12 h-12" />
+              <Link href="/lecturas">
+                <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+                  ←
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <Link href="/lecturas">
+              <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+                ←
+              </Button>
+            </Link>
+          )}
+        </div>
+
+        {/* Contenido debajo del header */}
+        <div className="mt-24 flex-1">
+          {/* Contenido */}
+          <div className="flex-1 px-6 py-4 lg:py-8 max-w-3xl mx-auto overflow-y-auto">
+            <h2 className="text-base lg:text-2xl font-normal text-negro text-center">
+              {lecturaMock.titulo}
+            </h2>
+            <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-normal text-justify py-6">
+              {lecturaMock.contenido}
+            </p>
+            {/* Botón de responder */}
+            <div className="mx-auto flex justify-center">
+              <Button
+                onPress={
+                  pasoAntesDeLectura !== null
+                    ? volverAPreguntaPendiente
+                    : avanzarPaso
+                }
+                className={`font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] transition text-white bg-verde hover:bg-verdeClar`}
+              >
+                {pasoAntesDeLectura !== null
+                  ? "Volver a la pregunta"
+                  : "Responder"}
+              </Button>
+            </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -115,52 +157,93 @@ const ModoPage = () => {
   const progreso = Math.round((pasoActual / (totalPasos - 1)) * 100);
 
   return (
-    <div className="px-6 py-4 lg:py-8 max-w-3xl mx-auto h-full flex flex-col">
-      {/* Progreso */}
-      <div className="mb-5 lg:mb-10">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-normal text-negro">
-            Dificultad: <span>{pregunta.dificultad}</span>
-          </span>
-          <p className="text-right text-sm font-normal text-negro">
-            {pasoActual}/{totalPasos - 1}
-          </p>
+    <div className="h-full flex flex-col">
+      {/* Header fijo */}
+      <div className="flex p-4 items-center justify-between h-24 fixed top-0 w-full bg-white z-10 shadow">
+        <div className="flex items-center">
+          <img
+            src={lecturaMock.imagen}
+            alt={lecturaMock.titulo}
+            className="w-[76px] h-[76px] object-cover"
+          />
+          <div className="px-4 py-2 rounded">
+            <h1 className="hidden sm:block text-sm lg:text-lg font-normal">
+              {lecturaMock.titulo}
+            </h1>
+          </div>
         </div>
-        <Progress
-          value={progreso}
-          max={100}
-          color={
-            pregunta.dificultad === "Fácil"
-              ? "primary"
-              : pregunta.dificultad === "Media"
-              ? "warning"
-              : "danger"
-          }
-        />
+        {/* Iconos de comodines solo si el modo es aprendizaje */}
+        {modo === "aprendizaje" && pasoActual === 0 ? 
+         (
+          <div className="flex gap-8">
+            <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12" />
+            <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />
+            <img src="/estrella.svg" alt="Estrella" className="w-12 h-12" />
+            <Link href="/lecturas">
+              <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+                ←
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <Link href="/lecturas">
+            <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+              ←
+            </Button>
+          </Link>
+        )}
       </div>
 
-      {/* Tipo de pregunta */}
-      {pregunta.tipo === "seleccion" ? (
-        <PreguntaSeleccion
-          pregunta={pregunta}
-          seleccion={respuestas[pregunta.id]}
-          setRespuesta={(valor) =>
-            setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
-          }
-          onContinuar={avanzarPaso}
-          volverALectura={irALectura}
-        />
-      ) : (
-        <PreguntaCompletar
-          pregunta={pregunta}
-          seleccion={respuestas[pregunta.id]}
-          setRespuesta={(valor) =>
-            setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
-          }
-          onContinuar={avanzarPaso}
-          volverALectura={irALectura}
-        />
-      )}
+      {/* Contenido debajo del header */}
+      <div className="mt-24 flex-1">
+        <div className="px-6 py-4 lg:py-8 max-w-3xl mx-auto h-full flex flex-col">
+          {/* Progreso */}
+          <div className="mb-5 lg:mb-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-normal text-negro">
+                Dificultad: <span>{pregunta.dificultad}</span>
+              </span>
+              <p className="text-right text-sm font-normal text-negro">
+                {pasoActual}/{totalPasos - 1}
+              </p>
+            </div>
+            <Progress
+              value={progreso}
+              max={100}
+              color={
+                pregunta.dificultad === "Fácil"
+                  ? "primary"
+                  : pregunta.dificultad === "Media"
+                  ? "warning"
+                  : "danger"
+              }
+            />
+          </div>
+
+          {/* Tipo de pregunta */}
+          {pregunta.tipo === "seleccion" ? (
+            <PreguntaSeleccion
+              pregunta={pregunta}
+              seleccion={respuestas[pregunta.id]}
+              setRespuesta={(valor) =>
+                setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
+              }
+              onContinuar={avanzarPaso}
+              volverALectura={irALectura}
+            />
+          ) : (
+            <PreguntaCompletar
+              pregunta={pregunta}
+              seleccion={respuestas[pregunta.id]}
+              setRespuesta={(valor) =>
+                setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
+              }
+              onContinuar={avanzarPaso}
+              volverALectura={irALectura}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };
