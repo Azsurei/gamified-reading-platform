@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Button } from "@heroui/react";
 
 const lecturaMock = {
@@ -10,7 +11,10 @@ const lecturaMock = {
   imagen: "/agujero-negro.svg",
 };
 
+
 const LayoutModo = ({ children }) => {
+  const { modo } = useParams(); // Detecta si el modo es 'aprendizaje'
+
   return (
     <div className="h-full flex flex-col">
       {/* Header fijo */}
@@ -27,11 +31,25 @@ const LayoutModo = ({ children }) => {
             </h1>
           </div>
         </div>
-        <Link href="/lecturas">
-          <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
-            ←
-          </Button>
-        </Link>
+        {/* Iconos de comodines solo si el modo es aprendizaje */}
+        {modo === "aprendizaje" ? (
+          <div className="flex gap-8">
+            <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12"/>
+            <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />
+            <img src="/estrella.svg" alt="Estrella" className="w-12 h-12" />
+            <Link href="/lecturas">
+              <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+                ←
+              </Button>
+            </Link>
+          </div>
+        ): (
+          <Link href="/lecturas">
+            <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+              ←
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Contenido debajo del header */}

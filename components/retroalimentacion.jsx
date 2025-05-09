@@ -8,10 +8,12 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue,Button
+  getKeyValue,
+  Button,
 } from "@heroui/react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
+import Racoon from "@/public/racoon.json"
 
 const XP_TOTAL = 140;
 const XP_OBTENIDA = 76;
@@ -44,7 +46,8 @@ const rows = [
   },
   {
     key: "5",
-    desempeno: "5. Opinión crítica sobre el contenido y la organización textual",
+    desempeno:
+      "5. Opinión crítica sobre el contenido y la organización textual",
     experiencia: "10 XP de 20",
     efectividad: "50%",
   },
@@ -75,27 +78,38 @@ export default function Retroalimentacion() {
   const router = useRouter();
 
   const desempenosBajos = rows
-    .filter((row) => parseInt(row.efectividad) < 100)
+    .filter((row) => parseInt(row.efectividad) <= 50)
     .map((row) => row.key)
     .join(", ");
 
-  return (
-    <div className="max-w-4xl mx-auto p-4 text-center">
-      <h2 className="text-xl font-semibold mb-2">
-        El horizonte de eventos: la frontera que marca el destino
-      </h2>
+  const mensajeDesempenos =
+    desempenosBajos.length > 0
+      ? `¡Buen trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia. Practicar más los desempeños ${desempenosBajos} para mejorar aún más.`
+      : `¡Excelente trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia y todos los desempeños están en buen nivel.`;
 
-      <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-10 my-6">
-        <Image src="/images/raccoon.png" alt="Mapache" width={80} height={80} />
-        <div className="flex items-center gap-4">
-          <span className="text-verde font-bold text-2xl">
-            {XP_OBTENIDA} XP <span className="text-base font-normal">de {XP_TOTAL}</span>
-          </span>
-          <span className="text-amarillo font-bold text-2xl">{EFECTIVIDAD}%</span>
-        </div>
+  return (
+    <div className="max-w-3xl mx-auto text-center px-6 pb-4 lg:pb-8 h-full flex flex-col justify-between">
+      <div className="flex items-center justify-around gap-4">
+        <Lottie
+          animationData={Racoon}
+          className="w-[150px] h-[150px] lg:w-[200px] lg:h-[180px]"
+        />
+
+        <span className="text-verde font-bold text-xl sm:text-4xl lg:text-[54px] border border-verde rounded-xl px-2">
+          {XP_OBTENIDA} XP
+          <span className="text-xs sm:text-sm lg:text-base font-normal">de {XP_TOTAL}</span>
+        </span>
+        <span className="text-amarillo font-bold text-xl sm:text-4xl lg:text-[54px] border border-amarillo rounded-xl px-2">
+          {EFECTIVIDAD}%
+        </span>
       </div>
 
-      <Table aria-label="Tabla de retroalimentación de desempeños">
+      <Table
+        isVirtualized
+        aria-label="Tabla de retroalimentación de desempeños"
+        maxTableHeight={440}
+        rowHeight={60}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -112,16 +126,18 @@ export default function Retroalimentacion() {
         </TableBody>
       </Table>
 
-      <p className="mt-6 text-sm text-left border border-[#3979D9] rounded-md p-3 text-[#3979D9]">
-        ¡Buen trabajo! Ganaste {XP_OBTENIDA} puntos de experiencia. Practicar más los desempeños {desempenosBajos} para mejorar aún más.
+      <p className="mt-6 text-[16px] text-left border border-[#3979D9] rounded-md p-3 text-[#3979D9]">
+        {mensajeDesempenos}
       </p>
 
-      <Button
-        className="mt-6 bg-verde text-white w-[222px] h-[52px] text-sm lg:text-lg"
-        onPress={() => router.push("/lecturas")}
-      >
-        Finalizar
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          className="mt-6 bg-verde text-white w-[222px] h-[52px] text-sm lg:text-lg "
+          onPress={() => router.push("/lecturas")}
+        >
+          Finalizar
+        </Button>
+      </div>
     </div>
   );
 }
