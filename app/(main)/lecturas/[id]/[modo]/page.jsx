@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Progress } from "@heroui/react";
 import { PreguntaSeleccion } from "@/components/pregunta-seleccion";
 import { PreguntaCompletar } from "@/components/pregunta-completar";
@@ -48,13 +48,33 @@ const preguntasMock = [
 ];
 
 const ModoPage = () => {
-  const { modo } = useParams(); // Detecta si el modo es 'aprendizaje'
+  const { modo, id } = useParams(); // Detecta si el modo es 'aprendizaje'
+  const [lectura, setLectura] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [pasoActual, setPasoActual] = useState(0);
   const [pasoAntesDeLectura, setPasoAntesDeLectura] = useState(null);
   const [respuestas, setRespuestas] = useState({});
   const [mostrarRetroalimentacion, setMostrarRetroalimentacion] =
     useState(false);
   const totalPasos = preguntasMock.length + 1; // +1 por la lectura
+
+  useEffect(() => {
+    const fetchLectura = async () => {
+      try {
+        const res = await fetch(`/api/lecturas/${id}`);
+        if (!res.ok) throw new Error("Lectura no encontrada");
+        const data = await res.json();
+        console.log("La data es: ", data);
+        setLectura(data.lectura);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchLectura();
+  }, [id]);
 
   const avanzarPaso = () => {
     if (pasoActual === totalPasos - 1) {
@@ -78,6 +98,8 @@ const ModoPage = () => {
     }
   };
 
+  if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
+
   if (mostrarRetroalimentacion) {
     return <Retroalimentacion />;
   }
@@ -90,13 +112,13 @@ const ModoPage = () => {
         <div className="flex p-4 items-center justify-between h-24 fixed top-0 w-full bg-white z-10 shadow">
           <div className="flex items-center">
             <img
-              src={lecturaMock.imagen}
-              alt={lecturaMock.titulo}
+              src={lectura.imagen}
+              alt={lectura.titulo}
               className="w-[76px] h-[76px] object-cover"
             />
             <div className="px-4 py-2 rounded">
               <h1 className="hidden sm:block text-sm lg:text-lg font-normal">
-                {lecturaMock.titulo}
+                {lectura.titulo}
               </h1>
             </div>
           </div>
@@ -126,10 +148,10 @@ const ModoPage = () => {
           {/* Contenido */}
           <div className="flex-1 px-6 py-4 lg:py-8 max-w-3xl mx-auto overflow-y-auto">
             <h2 className="text-base lg:text-2xl font-normal text-negro text-center">
-              {lecturaMock.titulo}
+              {lectura.titulo}
             </h2>
             <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-normal text-justify py-6">
-              {lecturaMock.contenido}
+              {lectura.contenido}
             </p>
             {/* Botón de responder */}
             <div className="mx-auto flex justify-center">
@@ -162,19 +184,18 @@ const ModoPage = () => {
       <div className="flex p-4 items-center justify-between h-24 fixed top-0 w-full bg-white z-10 shadow">
         <div className="flex items-center">
           <img
-            src={lecturaMock.imagen}
-            alt={lecturaMock.titulo}
+            src={lectura.imagen}
+            alt={lectura.titulo}
             className="w-[76px] h-[76px] object-cover"
           />
           <div className="px-4 py-2 rounded">
             <h1 className="hidden sm:block text-sm lg:text-lg font-normal">
-              {lecturaMock.titulo}
+              {lectura.titulo}
             </h1>
           </div>
         </div>
         {/* Iconos de comodines solo si el modo es aprendizaje */}
-        {modo === "aprendizaje" && pasoActual === 0 ? 
-         (
+        {modo === "aprendizaje" && pasoActual === 0 ? (
           <div className="flex gap-8">
             <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12" />
             <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />

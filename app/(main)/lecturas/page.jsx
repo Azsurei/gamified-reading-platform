@@ -14,115 +14,49 @@ const categories = [
   { id: "arte", label: "Arte" },
 ];
 
-const allLectures = [
-  {
-    
-    title: "El horizonte de eventos: la frontera que marca el destino",
-    description:
-      "Breve texto científico sobre el horizonte de eventos de un agujero negro. ",
-    image: "/agujero-negro.svg",
-    category: "ciencia",
-  },
-  {
-    title: "La era de los videojuegos",
-    description:
-      "Breve historia del nacimiento y evolución de los videojuegos.",
-    image: "/videojuegos.svg",
-    category: "entretenimiento",
-  },
-  {
-    title: "Ícaro: el hombre que voló cerca al sol",
-    description: "Breve historia de Ícaro.",
-    image: "/icaro.svg",
-    category: "historia",
-  },
-  {
-    title: "El hilo de Ariadna",
-    description: "Breve historia del hilo de Ariadna.",
-    image: "/ariadna.svg",
-    category: "literatura",
-  },
-  {
-    title: "El horizonte de eventos: la frontera que marca el destino",
-    description:
-      "Breve texto científico sobre el horizonte de eventos de un agujero negro.",
-    image: "/agujero-negro.svg",
-    category: "ciencia",
-  },
-  {
-    title: "La era de los videojuegos",
-    description:
-      "Breve historia del nacimiento y evolución de los videojuegos.",
-    image: "/videojuegos.svg",
-    category: "entretenimiento",
-  },
-  {
-    title: "Ícaro: el hombre que voló cerca al sol",
-    description: "Breve historia de Ícaro.",
-    image: "/icaro.svg",
-    category: "historia",
-  },
-  {
-    title: "El hilo de Ariadna",
-    description: "Breve historia del hilo de Ariadna.",
-    image: "/ariadna.svg",
-    category: "literatura",
-  },
-  {
-    title: "El horizonte de eventos: la frontera que marca el destino",
-    description:
-      "Breve texto científico sobre el horizonte de eventos de un agujero negro.",
-    image: "/agujero-negro.svg",
-    category: "ciencia",
-  },
-  {
-    title: "La era de los videojuegos",
-    description:
-      "Breve historia del nacimiento y evolución de los videojuegos.",
-    image: "/videojuegos.svg",
-    category: "entretenimiento",
-  },
-  {
-    title: "Ícaro: el hombre que voló cerca al sol",
-    description: "Breve historia de Ícaro.",
-    image: "/icaro.svg",
-    category: "historia",
-  },
-  {
-    title: "El hilo de Ariadna",
-    description: "Breve historia del hilo de Ariadna.",
-    image: "/ariadna.svg",
-    category: "literatura",
-  },
-];
-
 const LearnPage = () => {
+  const [lectures, setLectures] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Fetch de lecturas desde la API
+  useEffect(() => {
+    const fetchLectures = async () => {
+      try {
+        const res = await fetch("/api/lecturas");
+        const data = await res.json();
+        setLectures(data);
+      } catch (error) {
+        console.error("Error al obtener lecturas:", error);
+      }
+    };
+
+    fetchLectures();
+  }, []);
 
   const filterLectures = (categoryId) => {
     const filtered =
       categoryId === "all"
-        ? allLectures
-        : allLectures.filter((lec) => lec.category === categoryId);
+        ? lectures
+        : lectures.filter((lec) => lec.categoria === categoryId);
     return filtered.filter((lec) =>
-      lec.title.toLowerCase().includes(searchTerm.toLowerCase())
+      lec.titulo.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
   return (
     <div className="w-full px-8 pb-12">
       {/* Búsqueda */}
-      <div className="w-full border-b border-gray-200 pb-4 ">
+      <div className="w-full border-b border-gray-200 pb-4">
         <Input
           placeholder="Buscar una lectura"
-          className="w-full max-w-lg "
+          className="w-full max-w-lg"
           value={searchTerm}
           onValueChange={setSearchTerm}
         />
       </div>
 
-      {/* Contenedor desplazable solo para los botones de Tabs */}
+      {/* Tabs */}
       <div className="w-full overflow-x-auto mt-6">
         <div className="inline-flex gap-2 min-w-max">
           {categories.map((item) => (
@@ -141,25 +75,24 @@ const LearnPage = () => {
         </div>
       </div>
 
-      {/* Contenido de la pestaña actual */}
+      {/* Lista de lecturas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {filterLectures(selectedCategory).length > 0 ? (
-          filterLectures(selectedCategory).map((lecture, i) => (
-            <Link href={`/lecturas/${i}`} key={i}>
-              <div
-                key={i}
-                className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20"
-              >
+          filterLectures(selectedCategory).map((lecture) => (
+            <Link href={`/lecturas/${lecture.id}`} key={lecture.id}>
+              <div className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20">
                 <img
-                  src={lecture.image}
-                  alt={lecture.title}
+                  src={lecture.imagen}
+                  alt={lecture.titulo}
                   className="w-[96px] h-[96px] rounded-lg object-cover"
                 />
                 <div>
                   <h3 className="text-lg font-semibold text-negro">
-                    {lecture.title}
+                    {lecture.titulo}
                   </h3>
-                  <p className="text-sm text-gray-600 text-justify">{lecture.description}</p>
+                  <p className="text-sm text-gray-600 text-justify">
+                    {lecture.descripcion}
+                  </p>
                 </div>
               </div>
             </Link>

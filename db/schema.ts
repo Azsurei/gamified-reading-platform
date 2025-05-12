@@ -16,6 +16,7 @@ export const usuario = pgTable("usuario", {
   fechaCreacion: timestamp("fecha_creacion", { mode: "date" })
     .defaultNow()
     .notNull(),
+  puntosDeExperiencia: integer("puntos_de_experiencia").default(0),
 });
 
 export const lectura = pgTable("lectura", {
@@ -26,7 +27,6 @@ export const lectura = pgTable("lectura", {
   imagen: varchar("imagen", { length: 255 }).notNull(),
   tipoTexto: varchar("tipo_texto", { length: 100 }).notNull(),
   categoria: varchar("categoria", { length: 100 }),
-  nivelDificultad: varchar("nivel_dificultad", { length: 50 }),
 });
 
 export const desempeno = pgTable("desempeno", {
@@ -56,6 +56,7 @@ export const pregunta = pgTable("pregunta", {
   }),
   enunciado: text("enunciado").notNull(),
   tipo: varchar("tipo", { length: 50 }),
+  nivelDificultad: varchar("nivel_dificultad", { length: 50 }),
 });
 
 export const alternativa = pgTable("alternativa", {
