@@ -16,7 +16,8 @@ export const usuario = pgTable("usuario", {
   fechaCreacion: timestamp("fecha_creacion", { mode: "date" })
     .defaultNow()
     .notNull(),
-  puntosDeExperiencia: integer("puntos_de_experiencia").default(0),
+  xpGanado: integer("xp_ganado").default(0), // solo lo ganado por actividades
+  xpGastado: integer("xp_gastado").default(0), // lo gastado en la tienda
 });
 
 export const lectura = pgTable("lectura", {
@@ -55,6 +56,7 @@ export const pregunta = pgTable("pregunta", {
     onDelete: "set null",
   }),
   enunciado: text("enunciado").notNull(),
+  tipoCorreccion: varchar("tipo_correccion", { length: 100 }),
   tipo: varchar("tipo", { length: 50 }),
   nivelDificultad: varchar("nivel_dificultad", { length: 50 }),
 });
@@ -81,7 +83,7 @@ export const respuesta = pgTable("respuesta", {
     onDelete: "set null",
   }),
   retroalimentacion: text("retroalimentacion"),
-  tipoCorreccion: varchar("tipo_correccion", { length: 100 }),
+
   resultado: varchar("resultado", { length: 100 }),
   puntajeObtenido: integer("puntaje_obtenido"),
   fechaRespuesta: timestamp("fecha_respuesta").defaultNow(),
@@ -100,6 +102,35 @@ export const progresoDesafio = pgTable("progreso_desafio", {
   completado: boolean("completado").default(false),
   fechaLogro: timestamp("fecha_logro"),
 });
+
+export const tipoComodin = pgTable("tipo_comodin", {
+  id: serial("id").primaryKey(),
+  nombre: varchar("nombre", { length: 100 }).notNull(),
+  descripcion: text("descripcion").notNull(),
+  costoXp: integer("costo_xp").notNull(),
+  imagen: varchar("imagen", { length: 255 }),
+});
+
+export const comodinLectura = pgTable("comodin_lectura", {
+  id: serial("id").primaryKey(),
+  lecturaId: integer("lectura_id").references(() => lectura.id, {
+    onDelete: "cascade",
+  }),
+  tipoComodinId: integer("tipo_comodin_id").references(() => tipoComodin.id, {
+    onDelete: "cascade",
+  }),
+  estructuraTexto: text("estructura_texto"), // Ej. JSON o delimitado
+  ideaPrincipal: text("idea_principal"),
+  palabrasClave: text("palabras_clave"), // Ej. palabras separadas por coma
+});
+
+export const comodinUsuario = pgTable("comodin_usuario", {
+  id: serial("id").primaryKey(),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  tipoComodinId: integer("tipo_comodin_id").references(() => tipoComodin.id),
+  cantidad: integer("cantidad").default(0),
+});
+
 
 // RELATIONS
 
@@ -174,3 +205,30 @@ export const progresoDesafioRelations = relations(
     }),
   })
 );
+
+export const tipoComodinRelations = relations(tipoComodin, ({ many }) => ({
+  comodinesLectura: many(comodinLectura),
+  comodinesUsuario: many(comodinUsuario),
+}));
+
+export const comodinLecturaRelations = relations(comodinLectura, ({ one }) => ({
+  lectura: one(lectura, {
+    fields: [comodinLectura.lecturaId],
+    references: [lectura.id],
+  }),
+  tipoComodin: one(tipoComodin, {
+    fields: [comodinLectura.tipoComodinId],
+    references: [tipoComodin.id],
+  }),
+}));
+
+export const comodinUsuarioRelations = relations(comodinUsuario, ({ one }) => ({
+  usuario: one(usuario, {
+    fields: [comodinUsuario.usuarioId],
+    references: [usuario.id],
+  }),
+  tipoComodin: one(tipoComodin, {
+    fields: [comodinUsuario.tipoComodinId],
+    references: [tipoComodin.id],
+  }),
+}));

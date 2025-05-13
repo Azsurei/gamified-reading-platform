@@ -8,55 +8,18 @@ import Retroalimentacion from "@/components/retroalimentacion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-// Simulación de contenido
-const lecturaMock = {
-  id: "lect1",
-  titulo: "El horizonte de eventos: la frontera que marca el destino",
-  imagen: "/agujero-negro.svg",
-  contenido: `
-    Un agujero negro es un objeto astronómico con una gravedad tan intensa que nada puede escapar de su interior, ni siquiera la luz. 
-Se forma cuando una estrella muy masiva agota su energía y colapsa sobre sí misma, concentrando toda su masa en un punto extremadamente denso llamado singularidad. Alrededor de este punto se encuentra una región invisible, lo que conocemos como agujero negro. No podemos observarlo directamente porque ni la luz puede salir de él, pero los científicos pueden inferir su presencia observando el comportamiento de la materia y la luz en su entorno, como estrellas que giran de forma extraña o gases que se calientan al acercarse.
-
-Uno de los conceptos más fascinantes y desafiantes al estudiar los agujeros negros es el llamado horizonte de eventos. Esta es la “frontera” que marca el punto sin retorno: una vez que algo lo cruza, ya no hay manera de volver atrás. Se le llama así porque más allá de ese límite ya no es posible recibir información o eventos desde dentro del agujero negro. No se trata de una barrera física, sino de un límite matemático definido por la velocidad de escape: para poder salir, un objeto tendría que moverse más rápido que la luz, lo cual, según la teoría de la relatividad de Einstein, es imposible. Por eso, el horizonte de eventos es una línea invisible, pero crítica, en la estructura del universo.
-
-El estudio del horizonte de eventos ha llevado a grandes debates entre los científicos, especialmente cuando se mezcla con la mecánica cuántica. Uno de los más conocidos es la llamada paradoja de la información: si todo lo que entra en un agujero negro desaparece, ¿qué sucede con la información que contenía? ¿Se destruye para siempre? Esto desafía las leyes de la física, que afirman que la información no puede perderse. Además, los físicos han descubierto que cuando la materia se acerca al horizonte de eventos, experimenta fenómenos extremos: el tiempo se desacelera desde el punto de vista de un observador externo, y la materia puede alcanzar temperaturas muy altas. Todo esto hace que el horizonte de eventos no solo sea una frontera física, sino también una frontera del conocimiento humano, donde las leyes conocidas de la ciencia comienzan a encontrarse con sus propios límites.
-  `,
-};
-
-const preguntasMock = [
-  {
-    id: "p1",
-    tipo: "seleccion",
-    contenido: "¿Qué es un agujero negro?",
-    alternativas: [
-      "Una región en el espacio donde la gravedad es tan fuerte que nada puede escapar.",
-      "Una estrella que brilla intensamente en el cielo nocturno.",
-      "Una galaxia con una gran cantidad de estrellas.",
-      "Un tipo de planeta en el borde de un sistema solar.",
-    ],
-    respuestaCorrecta:
-      "Una región en el espacio donde la gravedad es tan fuerte que nada puede escapar.",
-    dificultad: "Fácil",
-  },
-  {
-    id: "p2",
-    tipo: "completar",
-    contenido:
-      "¿Consideras que el autor logró organizar bien las ideas para explicar un tema tan complejo? ¿Por qué?",
-    dificultad: "Media",
-  },
-];
-
 const ModoPage = () => {
   const { modo, id } = useParams(); // Detecta si el modo es 'aprendizaje'
   const [lectura, setLectura] = useState(null);
+  const [preguntas, setPreguntas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pasoActual, setPasoActual] = useState(0);
   const [pasoAntesDeLectura, setPasoAntesDeLectura] = useState(null);
   const [respuestas, setRespuestas] = useState({});
   const [mostrarRetroalimentacion, setMostrarRetroalimentacion] =
     useState(false);
-  const totalPasos = preguntasMock.length + 1; // +1 por la lectura
+  const totalPasos = preguntas.length + 1; // +1 por la lectura
+  console.log("El total de pasos es: ", totalPasos);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -66,6 +29,7 @@ const ModoPage = () => {
         const data = await res.json();
         console.log("La data es: ", data);
         setLectura(data.lectura);
+        setPreguntas(data.preguntas);
       } catch (error) {
         console.error(error);
       } finally {
@@ -175,7 +139,7 @@ const ModoPage = () => {
   }
 
   // Layout pregunta
-  const pregunta = preguntasMock[pasoActual - 1];
+  const pregunta = preguntas[pasoActual - 1];
   const progreso = Math.round((pasoActual / (totalPasos - 1)) * 100);
 
   return (

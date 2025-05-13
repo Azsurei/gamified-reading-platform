@@ -1,21 +1,58 @@
 import { db } from "@/db/drizzle";
 import { eq } from "drizzle-orm";
-import { lectura, pregunta } from "@/db/schema";
+import { lectura, pregunta, alternativa } from "@/db/schema";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
+  const lecturaId = parseInt(params.id);
+
+  // Obtener la lectura
   const lecturaResult = await db
     .select()
     .from(lectura)
-    .where(eq(lectura.id, parseInt(params.id)))
+    .where(eq(lectura.id, lecturaId))
     .limit(1);
 
+  // Obtener todas las preguntas asociadas a la lectura
   const preguntasResult = await db
     .select()
     .from(pregunta)
-    .where(eq(pregunta.lecturaId, parseInt(params.id)));
+    .where(eq(pregunta.lecturaId, lecturaId));
+
+  // Filtrar preguntas de tipo 'seleccion' y obtener sus alternativas
+  const preguntasConAlternativas = await Promise.all(
+    preguntasResult.map(async (preg) => {
+      if (preg.tipo === "seleccion") {
+        const alternativas = await db
+          .select()
+          .from(alternativa)
+          .where(eq(alternativa.preguntaId, preg.id));
+
+        return {
+          id: preg.id,
+          tipo: preg.tipo,
+          contenido: preg.enunciado,
+          dificultad: preg.nivelDificultad,
+          alternativas: alternativas.map((alt) => alt.texto),
+          respuestaCorrecta:
+            alternativas.find((alt) => alt.esCorrecta)?.texto ?? null,
+        };
+      } else {
+        return {
+          id: preg.id,
+          tipo: preg.tipo,
+          contenido: preg.enunciado,
+          dificultad: preg.nivelDificultad,
+        };
+      }
+    })
+  );
 
   return Response.json({
     lectura: lecturaResult[0],
-    preguntas: preguntasResult,
+    preguntas: preguntasConAlternativas,
   });
 }
