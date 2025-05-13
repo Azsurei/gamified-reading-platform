@@ -65,6 +65,7 @@ const ModoPage = () => {
   if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
 
   if (mostrarRetroalimentacion) {
+    console.log("Respuestas: ", respuestas);
     return <Retroalimentacion />;
   }
 
