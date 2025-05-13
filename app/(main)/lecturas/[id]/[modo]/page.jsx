@@ -226,6 +226,7 @@ const ModoPage = () => {
               }
               onContinuar={avanzarPaso}
               volverALectura={irALectura}
+              lecturaContenido={lectura.contenido}
             />
           )}
         </div>

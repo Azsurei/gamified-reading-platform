@@ -34,6 +34,7 @@ export async function GET(
         return {
           id: preg.id,
           tipo: preg.tipo,
+          tipoCorreccion: preg.tipoCorreccion,
           contenido: preg.enunciado,
           dificultad: preg.nivelDificultad,
           alternativas: alternativas.map((alt) => alt.texto),
@@ -44,6 +45,7 @@ export async function GET(
         return {
           id: preg.id,
           tipo: preg.tipo,
+          tipoCorreccion: preg.tipoCorreccion,
           contenido: preg.enunciado,
           dificultad: preg.nivelDificultad,
         };

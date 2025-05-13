@@ -7,12 +7,52 @@ export const PreguntaCompletar = ({
   setRespuesta,
   onContinuar,
   volverALectura,
+  lecturaContenido,
 }) => {
   const [verificado, setVerificado] = useState(false);
+  const [retroalimentacion, setRetroalimentacion] = useState("");
+  const [cargando, setCargando] = useState(false);
 
-  const handleVerificar = () => {
+  const handleVerificar = async () => {
     if (!seleccion || seleccion.trim() === "") return;
-    setVerificado(true); // En completar, no hay correcta o incorrecta.
+
+    setCargando(true);
+
+    try {
+      const res = await fetch("/api/analizar-respuesta", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lecturaContenido,
+          preguntaContenido: pregunta.contenido,
+          preguntaTipoDeCorreccion: pregunta.tipoCorreccion, // debe ser "objetiva" o "subjetiva"
+          respuestaContenido: seleccion,
+        }),
+      });
+
+      const data = await res.json();
+      console.log("La data de la respuesta es: ", data);
+
+      if (!res.ok) {
+        setRetroalimentacion("Ocurrió un error al analizar la respuesta.");
+        console.error(data?.detalle || data?.error);
+      } else {
+        // Mostrar la retroalimentación del modelo
+        setRetroalimentacion(data.retroalimentacion || "Respuesta registrada.");
+
+        // También podrías guardar 'esCorrecta' o 'nivel' si lo necesitas más adelante
+        // console.log(data.esCorrecta || data.nivel);
+      }
+
+      setVerificado(true);
+    } catch (error) {
+      console.error(error);
+      setRetroalimentacion("Error de red al verificar la respuesta.");
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -33,7 +73,7 @@ export const PreguntaCompletar = ({
 
       {verificado && (
         <div className="border-2 rounded-xl px-4 py-3 mb-6 text-center text-sm font-medium border-verde text-verde bg-white">
-          Respuesta registrada
+          {retroalimentacion}
         </div>
       )}
 
