@@ -12,6 +12,7 @@ const ModoPage = () => {
   const { modo, id } = useParams(); // Detecta si el modo es 'aprendizaje'
   const [lectura, setLectura] = useState(null);
   const [preguntas, setPreguntas] = useState([]);
+  const [puntajes, setPuntajes] = useState({}); // Guardar puntajes por desempeño
   const [loading, setLoading] = useState(true);
   const [pasoActual, setPasoActual] = useState(0);
   const [pasoAntesDeLectura, setPasoAntesDeLectura] = useState(null);
@@ -19,7 +20,7 @@ const ModoPage = () => {
   const [mostrarRetroalimentacion, setMostrarRetroalimentacion] =
     useState(false);
   const totalPasos = preguntas.length + 1; // +1 por la lectura
-  console.log("El total de pasos es: ", totalPasos);
+  //ñconsole.log("El total de pasos es: ", totalPasos);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -60,6 +61,17 @@ const ModoPage = () => {
       setPasoActual(pasoAntesDeLectura);
       setPasoAntesDeLectura(null); // una vez vuelto, lo limpio
     }
+  };
+
+  const registrarPuntaje = (desempeno, valor) => {
+    console.log("Registrar puntaje →", desempeno, valor);
+    // Aquí guardaré en un estado el puntaje de cada desempeñp sumandole el valor
+    // que le pase a la función
+    setPuntajes((prev) => ({
+      ...prev,
+      [desempeno]: (prev[desempeno] || 0) + valor,
+    }));
+    console.log("Puntajes: ", puntajes);
   };
 
   if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
@@ -196,6 +208,7 @@ const ModoPage = () => {
             <Progress
               value={progreso}
               max={100}
+              aria-label="Progreso de lectura"
               color={
                 pregunta.dificultad === "Fácil"
                   ? "primary"
@@ -216,6 +229,7 @@ const ModoPage = () => {
               }
               onContinuar={avanzarPaso}
               volverALectura={irALectura}
+              registrarPuntaje={registrarPuntaje}
             />
           ) : (
             <PreguntaCompletar
@@ -227,6 +241,7 @@ const ModoPage = () => {
               onContinuar={avanzarPaso}
               volverALectura={irALectura}
               lecturaContenido={lectura.contenido}
+              registrarPuntaje={registrarPuntaje}
             />
           )}
         </div>

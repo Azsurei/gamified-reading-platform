@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
 
 export const PreguntaCompletar = ({
@@ -8,10 +8,16 @@ export const PreguntaCompletar = ({
   onContinuar,
   volverALectura,
   lecturaContenido,
+  registrarPuntaje,
 }) => {
   const [verificado, setVerificado] = useState(false);
   const [retroalimentacion, setRetroalimentacion] = useState("");
   const [cargando, setCargando] = useState(false);
+
+    useEffect(() => {
+    // Reiniciar estados cuando cambia la pregunta
+    setVerificado(false);
+  }, [pregunta.id]);
 
   const handleVerificar = async () => {
     if (!seleccion || seleccion.trim() === "") return;
@@ -41,6 +47,20 @@ export const PreguntaCompletar = ({
       } else {
         // Mostrar la retroalimentación del modelo
         setRetroalimentacion(data.retroalimentacion || "Respuesta registrada.");
+        // Registrar el puntaje dependiendo del tipo de corrección de la pregunta
+        if (pregunta.tipoCorreccion === "objetivo") {
+          const puntaje = data.esCorrecta ? 10 : 0; // Asignar puntaje según la respuesta
+          registrarPuntaje(pregunta.desempenoId, puntaje);
+        } else{
+          const nivel = data.nivel;
+          if (nivel === "bajo") {
+            registrarPuntaje(pregunta.desempenoId, 0);
+          }else if (nivel === "medio") {
+            registrarPuntaje(pregunta.desempenoId, 5);
+          }else if (nivel === "alto") {
+            registrarPuntaje(pregunta.desempenoId, 10);
+          }
+        }
 
         // También podrías guardar 'esCorrecta' o 'nivel' si lo necesitas más adelante
         // console.log(data.esCorrecta || data.nivel);

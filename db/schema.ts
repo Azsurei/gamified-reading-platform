@@ -16,8 +16,10 @@ export const usuario = pgTable("usuario", {
   fechaCreacion: timestamp("fecha_creacion", { mode: "date" })
     .defaultNow()
     .notNull(),
+  xpGanadoTotal: integer("xp_ganado_total").default(0),
   xpGanado: integer("xp_ganado").default(0), // solo lo ganado por actividades
   xpGastado: integer("xp_gastado").default(0), // lo gastado en la tienda
+  numeroTop3: integer("numero_top3").default(0),
 });
 
 export const lectura = pgTable("lectura", {
@@ -131,16 +133,25 @@ export const comodinUsuario = pgTable("comodin_usuario", {
   cantidad: integer("cantidad").default(0),
 });
 
+export const lecturaCompletada = pgTable("lectura_completada", {
+  id: serial("id").primaryKey(),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  lecturaId: integer("lectura_id").references(() => lectura.id),
+  fechaCompletado: timestamp("fecha_completado").defaultNow(),
+});
+
 
 // RELATIONS
 
 export const usuarioRelations = relations(usuario, ({ many }) => ({
   respuestas: many(respuesta),
   progresoDesafios: many(progresoDesafio),
+  lecturasCompletadas: many(lecturaCompletada),
 }));
 
 export const lecturaRelations = relations(lectura, ({ many }) => ({
   preguntas: many(pregunta),
+  lecturasCompletadas: many(lecturaCompletada),
 }));
 
 export const desempenoRelations = relations(desempeno, ({ many }) => ({
@@ -232,3 +243,15 @@ export const comodinUsuarioRelations = relations(comodinUsuario, ({ one }) => ({
     references: [tipoComodin.id],
   }),
 }));
+
+export const lecturaCompletadaRelations = relations(lecturaCompletada, ({ one }) => ({
+  usuario: one(usuario, {
+    fields: [lecturaCompletada.usuarioId],
+    references: [usuario.id],
+  }),
+  lectura: one(lectura, {
+    fields: [lecturaCompletada.lecturaId],
+    references: [lectura.id],
+  }),
+}));
+

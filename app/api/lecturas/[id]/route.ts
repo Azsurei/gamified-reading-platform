@@ -20,7 +20,8 @@ export async function GET(
   const preguntasResult = await db
     .select()
     .from(pregunta)
-    .where(eq(pregunta.lecturaId, lecturaId));
+    .where(eq(pregunta.lecturaId, lecturaId))
+    .orderBy(pregunta.id);
 
   // Filtrar preguntas de tipo 'seleccion' y obtener sus alternativas
   const preguntasConAlternativas = await Promise.all(
@@ -40,6 +41,8 @@ export async function GET(
           alternativas: alternativas.map((alt) => alt.texto),
           respuestaCorrecta:
             alternativas.find((alt) => alt.esCorrecta)?.texto ?? null,
+          desempenoId: preg.desempenoId,
+          lecturaId: preg.lecturaId,
         };
       } else {
         return {
@@ -48,6 +51,8 @@ export async function GET(
           tipoCorreccion: preg.tipoCorreccion,
           contenido: preg.enunciado,
           dificultad: preg.nivelDificultad,
+          desempenoId: preg.desempenoId,
+          lecturaId: preg.lecturaId,
         };
       }
     })

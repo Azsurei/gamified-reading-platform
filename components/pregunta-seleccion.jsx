@@ -1,16 +1,32 @@
-import { useState } from 'react';
-import { Button } from '@heroui/react';
+import { useState, useEffect } from "react";
+import { Button } from "@heroui/react";
 
-const letras = ['A', 'B', 'C', 'D'];
+const letras = ["A", "B", "C", "D"];
 
-export const PreguntaSeleccion = ({ pregunta, seleccion, setRespuesta, onContinuar, volverALectura }) => {
+export const PreguntaSeleccion = ({
+  pregunta,
+  seleccion,
+  setRespuesta,
+  onContinuar,
+  volverALectura,
+  registrarPuntaje,
+}) => {
   const [verificado, setVerificado] = useState(false);
   const [esCorrecta, setEsCorrecta] = useState(false);
 
+  useEffect(() => {
+    // Reiniciar estados cuando cambia la pregunta
+    setVerificado(false);
+    setEsCorrecta(false);
+  }, [pregunta.id]);
+
   const handleVerificar = () => {
     if (!seleccion) return;
-    setEsCorrecta(seleccion === pregunta.respuestaCorrecta);
+    const correcta = seleccion === pregunta.respuestaCorrecta;
+    setEsCorrecta(correcta);
     setVerificado(true);
+    const puntaje = correcta ? 10 : 0;
+    registrarPuntaje(pregunta.desempenoId, puntaje);
   };
 
   return (
@@ -28,9 +44,13 @@ export const PreguntaSeleccion = ({ pregunta, seleccion, setRespuesta, onContinu
             }}
             className={`w-full flex items-start p-4 border rounded-xl text-left transition ${
               seleccion === alt
-                ? 'border-verde bg-verdeClaro text-white'
-                : 'border-gris'
-            } ${verificado && seleccion !== alt ? 'opacity-50 cursor-not-allowed' : ''}`}
+                ? "border-verde bg-verdeClaro text-white"
+                : "border-gris"
+            } ${
+              verificado && seleccion !== alt
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
             disabled={verificado}
           >
             <div className="flex items-center gap-2.5">
@@ -46,14 +66,14 @@ export const PreguntaSeleccion = ({ pregunta, seleccion, setRespuesta, onContinu
       {verificado && (
         <div
           className={`border-2 rounded-xl px-4 py-3 mb-6 text-center text-sm font-medium ${
-            esCorrecta ? 'border-verde text-verde' : 'border-rojo text-rojo'
+            esCorrecta ? "border-verde text-verde" : "border-rojo text-rojo"
           } bg-white`}
         >
-          {esCorrecta ? '¡Respuesta correcta!' : 'Respuesta incorrecta'}
+          {esCorrecta ? "¡Respuesta correcta!" : "Respuesta incorrecta"}
         </div>
       )}
 
-      <div className={`flex ${verificado ? 'justify-end' : 'justify-between'}`}>
+      <div className={`flex ${verificado ? "justify-end" : "justify-between"}`}>
         {!verificado && (
           <Button
             variant="ghost"
@@ -67,7 +87,7 @@ export const PreguntaSeleccion = ({ pregunta, seleccion, setRespuesta, onContinu
           onPress={verificado ? onContinuar : handleVerificar}
           className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] text-white bg-verde hover:bg-verdeClaro"
         >
-          {verificado ? 'Continuar' : 'Verificar'}
+          {verificado ? "Continuar" : "Verificar"}
         </Button>
       </div>
     </div>
