@@ -13,10 +13,12 @@ export const PreguntaCompletar = ({
   const [verificado, setVerificado] = useState(false);
   const [retroalimentacion, setRetroalimentacion] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [resultadoCorreccion, setResultadoCorreccion] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
     // Reiniciar estados cuando cambia la pregunta
     setVerificado(false);
+    setResultadoCorreccion(null);
   }, [pregunta.id]);
 
   const handleVerificar = async () => {
@@ -50,28 +52,47 @@ export const PreguntaCompletar = ({
         // Registrar el puntaje dependiendo del tipo de corrección de la pregunta
         if (pregunta.tipoCorreccion === "objetivo") {
           const puntaje = data.esCorrecta ? 10 : 0; // Asignar puntaje según la respuesta
-          registrarPuntaje(pregunta.desempenoId, puntaje);
-        } else{
+          //si el data.esCorrecta es verdadero, entonces el resultadoCorreccion será "correcto", de lo contrario será "incorrecto"
+          setResultadoCorreccion(data.esCorrecta ? "correcto" : "incorrecto");
+          registrarPuntaje(pregunta.desempenoId, puntaje, 10);
+        } else {
           const nivel = data.nivel;
+          setResultadoCorreccion(nivel); // Guardar el nivel de desempeño
           if (nivel === "bajo") {
-            registrarPuntaje(pregunta.desempenoId, 0);
-          }else if (nivel === "medio") {
-            registrarPuntaje(pregunta.desempenoId, 5);
-          }else if (nivel === "alto") {
-            registrarPuntaje(pregunta.desempenoId, 10);
+            registrarPuntaje(pregunta.desempenoId, 0, 10);
+          } else if (nivel === "medio") {
+            registrarPuntaje(pregunta.desempenoId, 5, 10);
+          } else if (nivel === "alto") {
+            registrarPuntaje(pregunta.desempenoId, 10, 10);
           }
         }
 
         // También podrías guardar 'esCorrecta' o 'nivel' si lo necesitas más adelante
         // console.log(data.esCorrecta || data.nivel);
       }
-
       setVerificado(true);
     } catch (error) {
       console.error(error);
       setRetroalimentacion("Error de red al verificar la respuesta.");
     } finally {
       setCargando(false);
+    }
+  };
+
+  // Determinar estilos según resultadoCorreccion
+  const getCorreccionStyles = () => {
+    switch (resultadoCorreccion) {
+      case "correcto":
+      case "alto":
+        return "border-verde text-verde";
+      case "medio":
+        return "border-amarillo text-amarillo";
+      case "incorrecto":
+        return "border-rojo text-rojo";
+      case "bajo":
+        return "border-orange-500 text-orange-500";
+      default:
+        return "border-verde text-verde";
     }
   };
 
@@ -92,7 +113,9 @@ export const PreguntaCompletar = ({
       </div>
 
       {verificado && (
-        <div className="border-2 rounded-xl px-4 py-3 mb-6 text-center text-sm font-medium border-verde text-verde bg-white">
+        <div
+          className={`border-2 rounded-xl px-4 py-3 mb-6 text-justify text-sm font-medium bg-white ${getCorreccionStyles()}`}
+        >
           {retroalimentacion}
         </div>
       )}

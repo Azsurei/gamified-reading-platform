@@ -147,6 +147,7 @@ export const usuarioRelations = relations(usuario, ({ many }) => ({
   respuestas: many(respuesta),
   progresoDesafios: many(progresoDesafio),
   lecturasCompletadas: many(lecturaCompletada),
+  comodinesUsuario: many(comodinUsuario),
 }));
 
 export const lecturaRelations = relations(lectura, ({ many }) => ({

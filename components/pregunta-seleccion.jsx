@@ -26,7 +26,7 @@ export const PreguntaSeleccion = ({
     setEsCorrecta(correcta);
     setVerificado(true);
     const puntaje = correcta ? 10 : 0;
-    registrarPuntaje(pregunta.desempenoId, puntaje);
+    registrarPuntaje(pregunta.desempenoId, puntaje, 10);
   };
 
   return (

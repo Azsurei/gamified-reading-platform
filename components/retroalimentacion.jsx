@@ -1,4 +1,3 @@
-// components/Retroalimentacion.tsx
 "use client";
 
 import {
@@ -13,51 +12,17 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
-import Racoon from "@/public/racoon.json"
+import Racoon from "@/public/racoon.json";
 
-const XP_TOTAL = 140;
-const XP_OBTENIDA = 76;
-const EFECTIVIDAD = ((XP_OBTENIDA / XP_TOTAL) * 100).toFixed(1);
-
-const rows = [
-  {
-    key: "1",
-    desempeno: "1. Identificación de información relevante y complementaria",
-    experiencia: "16 XP de 20",
-    efectividad: "80%",
-  },
-  {
-    key: "2",
-    desempeno: "2. Explicación de tema, subtemas y propósito comunicativo",
-    experiencia: "20 XP de 40",
-    efectividad: "50%",
-  },
-  {
-    key: "3",
-    desempeno: "3. Deducción de relaciones lógicas",
-    experiencia: "10 XP de 20",
-    efectividad: "50%",
-  },
-  {
-    key: "4",
-    desempeno: "4. Interpretación de intenciones y puntos de vista del autor",
-    experiencia: "10 XP de 20",
-    efectividad: "50%",
-  },
-  {
-    key: "5",
-    desempeno:
-      "5. Opinión crítica sobre el contenido y la organización textual",
-    experiencia: "10 XP de 20",
-    efectividad: "50%",
-  },
-  {
-    key: "6",
-    desempeno: "6. Justificación de preferencias",
-    experiencia: "10 XP de 20",
-    efectividad: "50%",
-  },
-];
+// Mapeo fijo de desempeños
+const desempenosTextos = {
+  1: "1. Identificación de información relevante y complementaria",
+  2: "2. Explicación de tema, subtemas y propósito comunicativo",
+  3: "3. Deducción de relaciones lógicas",
+  4: "4. Interpretación de intenciones y puntos de vista del autor",
+  5: "5. Opinión crítica sobre el contenido y la organización textual",
+  6: "6. Justificación de preferencias",
+};
 
 const columns = [
   {
@@ -74,11 +39,37 @@ const columns = [
   },
 ];
 
-export default function Retroalimentacion() {
+export default function Retroalimentacion({ puntajes }) {
   const router = useRouter();
 
+  // Construimos filas dinámicamente desde puntajes
+  const rows = Object.entries(desempenosTextos).map(([id, texto]) => {
+    const [obtenido, total] = puntajes?.[id] || [0, 0];
+    const efectividad = total > 0 ? ((obtenido / total) * 100).toFixed(1) : "0.0";
+
+    return {
+      key: id,
+      desempeno: texto,
+      experiencia: `${obtenido} XP de ${total}`,
+      efectividad: `${efectividad}%`,
+    };
+  });
+
+  // Cálculo global
+  const XP_TOTAL = rows.reduce((acc, row) => {
+    const match = row.experiencia.match(/de (\d+)/);
+    return acc + (match ? parseInt(match[1]) : 0);
+  }, 0);
+
+  const XP_OBTENIDA = rows.reduce((acc, row) => {
+    const match = row.experiencia.match(/(\d+) XP/);
+    return acc + (match ? parseInt(match[1]) : 0);
+  }, 0);
+
+  const EFECTIVIDAD = XP_TOTAL > 0 ? ((XP_OBTENIDA / XP_TOTAL) * 100).toFixed(1) : "0.0";
+
   const desempenosBajos = rows
-    .filter((row) => parseInt(row.efectividad) <= 50)
+    .filter((row) => parseFloat(row.efectividad) <= 50)
     .map((row) => row.key)
     .join(", ");
 
@@ -97,7 +88,9 @@ export default function Retroalimentacion() {
 
         <span className="text-verde font-bold text-xl sm:text-4xl lg:text-[54px] border border-verde rounded-xl px-2">
           {XP_OBTENIDA} XP
-          <span className="text-xs sm:text-sm lg:text-base font-normal">de {XP_TOTAL}</span>
+          <span className="text-xs sm:text-sm lg:text-base font-normal">
+            de {XP_TOTAL}
+          </span>
         </span>
         <span className="text-amarillo font-bold text-xl sm:text-4xl lg:text-[54px] border border-amarillo rounded-xl px-2">
           {EFECTIVIDAD}%

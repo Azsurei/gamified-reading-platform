@@ -63,22 +63,22 @@ const ModoPage = () => {
     }
   };
 
-  const registrarPuntaje = (desempeno, valor) => {
-    console.log("Registrar puntaje →", desempeno, valor);
-    // Aquí guardaré en un estado el puntaje de cada desempeñp sumandole el valor
-    // que le pase a la función
-    setPuntajes((prev) => ({
+  const registrarPuntaje = (desempeno, valor, totalPosible) => {
+  setPuntajes((prev) => {
+    const [prevObtenido = 0, prevTotal = 0] = prev[desempeno] || [];
+    return {
       ...prev,
-      [desempeno]: (prev[desempeno] || 0) + valor,
-    }));
-    console.log("Puntajes: ", puntajes);
-  };
+      [desempeno]: [prevObtenido + valor, prevTotal + totalPosible],
+    };
+  });
+};
+
 
   if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
-    return <Retroalimentacion />;
+    return <Retroalimentacion puntajes={puntajes} />;
   }
 
   // Layout lectura
