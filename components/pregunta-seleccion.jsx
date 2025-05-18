@@ -13,20 +13,32 @@ export const PreguntaSeleccion = ({
 }) => {
   const [verificado, setVerificado] = useState(false);
   const [esCorrecta, setEsCorrecta] = useState(false);
+  const [respuestaSeleccionada, setRespuestaSeleccionada] = useState(null); // nuevo estado local
 
   useEffect(() => {
     // Reiniciar estados cuando cambia la pregunta
     setVerificado(false);
     setEsCorrecta(false);
+    setRespuestaSeleccionada(null);
   }, [pregunta.id]);
 
   const handleVerificar = () => {
-    if (!seleccion) return;
-    const correcta = seleccion === pregunta.respuestaCorrecta;
+    if (!respuestaSeleccionada) return;
+
+    const correcta = respuestaSeleccionada.alternativaId === pregunta.respuestaCorrecta;
     setEsCorrecta(correcta);
     setVerificado(true);
+
     const puntaje = correcta ? 10 : 0;
     registrarPuntaje(pregunta.desempenoId, puntaje, 10);
+
+    setRespuesta({
+      preguntaId: pregunta.id,
+      contenidoRespuesta: respuestaSeleccionada.contenidoRespuesta,
+      alternativaId: respuestaSeleccionada.alternativaId,
+      resultado: correcta ? "correcto" : "incorrecto",
+      puntajeObtenido: puntaje,
+    });
   };
 
   return (
@@ -38,16 +50,21 @@ export const PreguntaSeleccion = ({
       <div className="space-y-4 mb-8">
         {pregunta.alternativas.map((alt, idx) => (
           <button
-            key={idx}
+            key={alt.id}
             onClick={() => {
-              if (!verificado) setRespuesta(alt);
+              if (!verificado) {
+                setRespuestaSeleccionada({
+                  contenidoRespuesta: alt.texto,
+                  alternativaId: alt.id,
+                });
+              }
             }}
             className={`w-full flex items-start p-4 border rounded-xl text-left transition ${
-              seleccion === alt
+              respuestaSeleccionada?.alternativaId === alt.id
                 ? "border-verde bg-verdeClaro text-white"
                 : "border-gris"
             } ${
-              verificado && seleccion !== alt
+              verificado && respuestaSeleccionada?.alternativaId !== alt.id
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
@@ -57,7 +74,7 @@ export const PreguntaSeleccion = ({
               <div className="font-normal border w-[30px] h-[30px] rounded-xl flex justify-center items-center border-gris">
                 {letras[idx]}
               </div>
-              <div className="flex-1">{alt}</div>
+              <div className="flex-1">{alt.texto}</div>
             </div>
           </button>
         ))}

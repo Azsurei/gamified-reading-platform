@@ -39,13 +39,14 @@ const columns = [
   },
 ];
 
-export default function Retroalimentacion({ puntajes }) {
+export default function Retroalimentacion({ puntajes, respuestas }) {
   const router = useRouter();
 
   // Construimos filas dinámicamente desde puntajes
   const rows = Object.entries(desempenosTextos).map(([id, texto]) => {
     const [obtenido, total] = puntajes?.[id] || [0, 0];
-    const efectividad = total > 0 ? ((obtenido / total) * 100).toFixed(1) : "0.0";
+    const efectividad =
+      total > 0 ? ((obtenido / total) * 100).toFixed(1) : "0.0";
 
     return {
       key: id,
@@ -66,7 +67,8 @@ export default function Retroalimentacion({ puntajes }) {
     return acc + (match ? parseInt(match[1]) : 0);
   }, 0);
 
-  const EFECTIVIDAD = XP_TOTAL > 0 ? ((XP_OBTENIDA / XP_TOTAL) * 100).toFixed(1) : "0.0";
+  const EFECTIVIDAD =
+    XP_TOTAL > 0 ? ((XP_OBTENIDA / XP_TOTAL) * 100).toFixed(1) : "0.0";
 
   const desempenosBajos = rows
     .filter((row) => parseFloat(row.efectividad) <= 50)
@@ -126,7 +128,24 @@ export default function Retroalimentacion({ puntajes }) {
       <div className="flex justify-end">
         <Button
           className="mt-6 bg-verde text-white w-[222px] h-[52px] text-sm lg:text-lg "
-          onPress={() => router.push("/lecturas")}
+          onPress={async () => {
+            try {
+              await fetch("/api/respuestas", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(respuestas), // arreglo completo
+              });
+
+              router.push("/lecturas");
+            } catch (error) {
+              console.error("Error al enviar respuestas:", error);
+              alert(
+                "Ocurrió un error al guardar tus respuestas. Intenta nuevamente."
+              );
+            }
+          }}
         >
           Finalizar
         </Button>

@@ -78,7 +78,7 @@ const ModoPage = () => {
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
-    return <Retroalimentacion puntajes={puntajes} />;
+    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} />;
   }
 
   // Layout lectura

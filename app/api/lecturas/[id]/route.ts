@@ -1,6 +1,7 @@
 import { db } from "@/db/drizzle";
 import { eq } from "drizzle-orm";
 import { lectura, pregunta, alternativa } from "@/db/schema";
+import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
@@ -38,9 +39,12 @@ export async function GET(
           tipoCorreccion: preg.tipoCorreccion,
           contenido: preg.enunciado,
           dificultad: preg.nivelDificultad,
-          alternativas: alternativas.map((alt) => alt.texto),
+          alternativas: alternativas.map((alt) => ({
+            id: alt.id,
+            texto: alt.texto,
+          })),
           respuestaCorrecta:
-            alternativas.find((alt) => alt.esCorrecta)?.texto ?? null,
+            alternativas.find((alt) => alt.esCorrecta)?.id ?? null,
           desempenoId: preg.desempenoId,
           lecturaId: preg.lecturaId,
         };
@@ -58,7 +62,7 @@ export async function GET(
     })
   );
 
-  return Response.json({
+  return NextResponse.json({
     lectura: lecturaResult[0],
     preguntas: preguntasConAlternativas,
   });

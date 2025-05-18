@@ -22,7 +22,8 @@ export const PreguntaCompletar = ({
   }, [pregunta.id]);
 
   const handleVerificar = async () => {
-    if (!seleccion || seleccion.trim() === "") return;
+    const respuestaTexto = seleccion?.contenidoRespuesta;
+    if (!respuestaTexto || respuestaTexto.trim() === "") return;
 
     setCargando(true);
 
@@ -36,7 +37,7 @@ export const PreguntaCompletar = ({
           lecturaContenido,
           preguntaContenido: pregunta.contenido,
           preguntaTipoDeCorreccion: pregunta.tipoCorreccion, // debe ser "objetiva" o "subjetiva"
-          respuestaContenido: seleccion,
+          respuestaContenido: respuestaTexto,
         }),
       });
 
@@ -47,28 +48,31 @@ export const PreguntaCompletar = ({
         setRetroalimentacion("Ocurrió un error al analizar la respuesta.");
         console.error(data?.detalle || data?.error);
       } else {
-        // Mostrar la retroalimentación del modelo
-        setRetroalimentacion(data.retroalimentacion || "Respuesta registrada.");
-        // Registrar el puntaje dependiendo del tipo de corrección de la pregunta
+        const retro = data.retroalimentacion || "Respuesta registrada.";
+        setRetroalimentacion(retro);
+
+        let resultado = "";
+        let puntaje = 0;
+
         if (pregunta.tipoCorreccion === "objetivo") {
-          const puntaje = data.esCorrecta ? 10 : 0; // Asignar puntaje según la respuesta
-          //si el data.esCorrecta es verdadero, entonces el resultadoCorreccion será "correcto", de lo contrario será "incorrecto"
-          setResultadoCorreccion(data.esCorrecta ? "correcto" : "incorrecto");
-          registrarPuntaje(pregunta.desempenoId, puntaje, 10);
+          resultado = data.esCorrecta ? "correcto" : "incorrecto";
+          puntaje = data.esCorrecta ? 10 : 0;
         } else {
-          const nivel = data.nivel;
-          setResultadoCorreccion(nivel); // Guardar el nivel de desempeño
-          if (nivel === "bajo") {
-            registrarPuntaje(pregunta.desempenoId, 0, 10);
-          } else if (nivel === "medio") {
-            registrarPuntaje(pregunta.desempenoId, 5, 10);
-          } else if (nivel === "alto") {
-            registrarPuntaje(pregunta.desempenoId, 10, 10);
-          }
+          resultado = data.nivel; // "alto", "medio", "bajo"
+          puntaje = resultado === "alto" ? 10 : resultado === "medio" ? 5 : 0;
         }
 
-        // También podrías guardar 'esCorrecta' o 'nivel' si lo necesitas más adelante
-        // console.log(data.esCorrecta || data.nivel);
+        setResultadoCorreccion(resultado);
+        registrarPuntaje(pregunta.desempenoId, puntaje, 10);
+
+        // Guardar la respuesta completa
+        setRespuesta({
+          preguntaId: pregunta.id,
+          contenidoRespuesta: respuestaTexto,
+          retroalimentacion: retro,
+          resultado: resultado,
+          puntajeObtenido: puntaje,
+        });
       }
       setVerificado(true);
     } catch (error) {
