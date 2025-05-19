@@ -44,9 +44,21 @@ export const desafio = pgTable("desafio", {
   tipoObjetivo: varchar("tipo_objetivo", { length: 100 }),
   meta: integer("meta"),
   categoria: varchar("categoria", { length: 100 }),
-  tipoTexto: varchar("tipo_texto", { length: 100 }),
   desempenoId: integer("desempeno_id").references(() => desempeno.id),
   imagenInsignia: varchar("imagen_insignia", { length: 255 }),
+});
+
+export const progresoDesafio = pgTable("progreso_desafio", {
+  id: serial("id").primaryKey(),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(
+    () => usuario.id
+  ),
+  desafioId: integer("desafio_id").references(() => desafio.id, {
+    onDelete: "cascade",
+  }),
+  progreso: integer("progreso"),
+  completado: boolean("completado").default(false),
+  fechaLogro: timestamp("fecha_logro"),
 });
 
 export const pregunta = pgTable("pregunta", {
@@ -90,19 +102,6 @@ export const respuesta = pgTable("respuesta", {
   puntajeObtenido: integer("puntaje_obtenido"),
   fechaRespuesta: timestamp("fecha_respuesta").defaultNow(),
   numeroReintento: integer("numero_reintento").default(0),
-});
-
-export const progresoDesafio = pgTable("progreso_desafio", {
-  id: serial("id").primaryKey(),
-  usuarioId: varchar("usuario_id", { length: 255 }).references(
-    () => usuario.id
-  ),
-  desafioId: integer("desafio_id").references(() => desafio.id, {
-    onDelete: "cascade",
-  }),
-  progreso: integer("progreso"),
-  completado: boolean("completado").default(false),
-  fechaLogro: timestamp("fecha_logro"),
 });
 
 export const tipoComodin = pgTable("tipo_comodin", {

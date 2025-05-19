@@ -10,7 +10,7 @@ async function seed() {
   // 1. Borra todos las desempeños para evitar duplicados
   await db.delete(schema.desempeno);
 
-  // 2. Inserta nueva lectura
+  // 2. Inserta nueva desempeño
   await db.insert(schema.desempeno).values([
     {
       nombre: "Identificación de información relevante y complementaria",

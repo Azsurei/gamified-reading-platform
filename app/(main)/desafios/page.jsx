@@ -1,88 +1,42 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Progress } from "@heroui/react";
 
-const desafios = [
-  {
-    id: 1,
-    titulo: "Completa 5 lecturas",
-    progresoActual: 1,
-    progresoTotal: 5,
-    insignia: "/book-badge.svg",
-  },
-  {
-    id: 2,
-    titulo: "Completa 1 lectura con puntaje perfecto",
-    progresoActual: 0,
-    progresoTotal: 1,
-    insignia: "/score-badge.svg",
-  },
-  {
-    id: 3,
-    titulo: "Lee 3 libros de la sección Literatura Clásica",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/classics-badge.svg",
-  },
-  {
-    id: 4,
-    titulo: "Lee 3 libros de la sección Historia",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/history-badge.svg",
-  },
-  {
-    id: 5,
-    titulo: "Lee 3 libros de la sección Ciencia",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/science-badge.svg",
-  },
-  {
-    id: 6,
-    titulo: "Completa 5 lecturas",
-    progresoActual: 1,
-    progresoTotal: 5,
-    insignia: "/book-badge.svg",
-  },
-  {
-    id: 7,
-    titulo: "Completa 1 lectura con puntaje perfecto",
-    progresoActual: 0,
-    progresoTotal: 1,
-    insignia: "/score-badge.svg",
-  },
-  {
-    id: 8,
-    titulo: "Lee 3 libros de la sección Literatura Clásica",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/classics-badge.svg",
-  },
-  {
-    id: 9,
-    titulo: "Lee 3 libros de la sección Historia",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/history-badge.svg",
-  },
-  {
-    id: 10,
-    titulo: "Lee 3 libros de la sección Ciencia",
-    progresoActual: 1,
-    progresoTotal: 3,
-    insignia: "/science-badge.svg",
-  },
-];
-
 const DesafiosPage = () => {
+  const [desafios, setDesafios] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDesafios = async () => {
+      try {
+        const res = await fetch("/api/desafios");
+        const data = await res.json();
+        setDesafios(data);
+      } catch (error) {
+        console.error("Error al cargar desafíos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDesafios();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-gray-600 font-medium">
+        Cargando desafíos...
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1050px] mx-auto px-8 pb-12">
       <div className="flex flex-col items-center mb-6 gap-4">
         <img
-          src={"/challenge.svg"}
-          alt={"Desafíos"}
+          src="/challenge.svg"
+          alt="Desafíos"
           className="w-[90px] h-[90px] rounded-lg object-cover"
         />
         <h1 className="lg:text-[40px] font-bold text-negro text-center text-2xl md:text-[30px]">
@@ -96,7 +50,9 @@ const DesafiosPage = () => {
       <div className="flex flex-col gap-10">
         {desafios.map((desafio) => {
           const progreso =
-            (desafio.progresoActual / desafio.progresoTotal) * 100;
+            desafio.meta === 0
+              ? 0
+              : (desafio.progreso / desafio.meta) * 100;
 
           return (
             <div
@@ -106,21 +62,21 @@ const DesafiosPage = () => {
               <div className="flex-1 pr-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-semibold text-negro mb-1">
-                    {desafio.titulo}
+                    {desafio.descripcion}
                   </p>
                   <span className="text-sm text-negro font-semibold">
-                    {desafio.progresoActual}/{desafio.progresoTotal}
+                    {desafio.progreso}/{desafio.meta}
                   </span>
                 </div>
                 <Progress
-                  aria-label={`Progreso de ${desafio.titulo}`}
+                  aria-label={`Progreso de ${desafio.descripcion}`}
                   value={progreso}
                   className="max-w-full"
                 />
               </div>
 
               <img
-                src={desafio.insignia}
+                src={desafio.imagenInsignia}
                 alt="Insignia"
                 className="w-10 h-10 object-contain ml-4"
               />

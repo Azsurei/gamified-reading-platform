@@ -39,7 +39,7 @@ const columns = [
   },
 ];
 
-export default function Retroalimentacion({ puntajes, respuestas }) {
+export default function Retroalimentacion({ puntajes, respuestas, lecturaId }) {
   const router = useRouter();
 
   // Construimos filas dinámicamente desde puntajes
@@ -79,6 +79,28 @@ export default function Retroalimentacion({ puntajes, respuestas }) {
     desempenosBajos.length > 0
       ? `¡Buen trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia. Practicar más los desempeños ${desempenosBajos} para mejorar aún más.`
       : `¡Excelente trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia y todos los desempeños están en buen nivel.`;
+
+  async function finalizarLectura() {
+    try {
+      // 1. Guardar respuestas
+      await fetch("/api/respuestas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(respuestas),
+      });
+
+      // 2. Registrar lectura completada
+      await fetch("/api/lectura-completada", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lecturaId }),
+      });
+
+      router.push("/lecturas");
+    } catch (error) {
+      console.error("Error al finalizar la lectura:", error);
+    }
+  }
 
   return (
     <div className="max-w-3xl mx-auto text-center px-6 pb-4 lg:pb-8 h-full flex flex-col justify-between">
@@ -128,24 +150,7 @@ export default function Retroalimentacion({ puntajes, respuestas }) {
       <div className="flex justify-end">
         <Button
           className="mt-6 bg-verde text-white w-[222px] h-[52px] text-sm lg:text-lg "
-          onPress={async () => {
-            try {
-              await fetch("/api/respuestas", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(respuestas), // arreglo completo
-              });
-
-              router.push("/lecturas");
-            } catch (error) {
-              console.error("Error al enviar respuestas:", error);
-              alert(
-                "Ocurrió un error al guardar tus respuestas. Intenta nuevamente."
-              );
-            }
-          }}
+          onPress={finalizarLectura}
         >
           Finalizar
         </Button>

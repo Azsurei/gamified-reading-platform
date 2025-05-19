@@ -7,10 +7,10 @@ const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema: { schema } });
 
 async function seed() {
-  // 1. Borra todos las desempeños para evitar duplicados
+  // 1. Borra todos las comodines para evitar duplicados
   await db.delete(schema.tipoComodin);
 
-  // 2. Inserta nueva lectura
+  // 2. Inserta nueva comodin
   await db.insert(schema.tipoComodin).values([
     {
       nombre: "Resaltar estructuras del texto",

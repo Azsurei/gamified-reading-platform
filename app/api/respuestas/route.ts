@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     }
 
     const respuestasFormateadas = body.map((r) => ({
-      usuarioId: userId,
       preguntaId: r.preguntaId,
+      usuarioId: userId,
       contenidoRespuesta: r.contenidoRespuesta,
       alternativaId: r.alternativaId ?? null,
       retroalimentacion: r.retroalimentacion ?? null,
@@ -30,6 +30,8 @@ export async function POST(req: Request) {
       puntajeObtenido: r.puntajeObtenido,
       // fechaRespuesta y numeroReintento se omiten para usar valores por defecto
     }));
+
+    console.log("Respuestas formateadas:", respuestasFormateadas);
 
     await db.insert(respuesta).values(respuestasFormateadas);
 
