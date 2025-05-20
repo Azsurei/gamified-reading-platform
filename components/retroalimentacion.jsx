@@ -39,7 +39,13 @@ const columns = [
   },
 ];
 
-export default function Retroalimentacion({ puntajes, respuestas, lecturaId }) {
+export default function Retroalimentacion({
+  puntajes,
+  respuestas,
+  lecturaId,
+  lecturaCategoria,
+  puntajeMaximo,
+}) {
   const router = useRouter();
 
   // Construimos filas dinámicamente desde puntajes
@@ -70,15 +76,33 @@ export default function Retroalimentacion({ puntajes, respuestas, lecturaId }) {
   const EFECTIVIDAD =
     XP_TOTAL > 0 ? ((XP_OBTENIDA / XP_TOTAL) * 100).toFixed(1) : "0.0";
 
+  // Calculamos incremento XP real (igual que en finalizarLectura)
+  const incrementoXP =
+    puntajeMaximo !== null && puntajeMaximo < XP_OBTENIDA
+      ? XP_OBTENIDA - puntajeMaximo
+      : puntajeMaximo === null
+      ? XP_OBTENIDA
+      : 0;
+
   const desempenosBajos = rows
     .filter((row) => parseFloat(row.efectividad) <= 50)
     .map((row) => row.key)
     .join(", ");
 
+  // Mensaje adaptado con incrementoXP y condición de puntajeMaximo
   const mensajeDesempenos =
-    desempenosBajos.length > 0
-      ? `¡Buen trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia. Practicar más los desempeños ${desempenosBajos} para mejorar aún más.`
-      : `¡Excelente trabajo! Ganaste ${XP_OBTENIDA} puntos de experiencia y todos los desempeños están en buen nivel.`;
+  puntajeMaximo === null
+    ? desempenosBajos.length > 0
+      ? `¡Buen trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez. Practica más los desempeños ${desempenosBajos} para mejorar aún más.`
+      : `¡Excelente trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez y todos los desempeños están en buen nivel.`
+    : incrementoXP === 0
+    ? desempenosBajos.length > 0
+      ? `¡Buen trabajo! Esta vez no ganaste puntos de experiencia porque ya habías conseguido un puntaje mayor en un intento anterior. Practica más los desempeños ${desempenosBajos} para mejorar aún más.`
+      : `¡Buen intento! Esta vez no ganaste puntos de experiencia porque ya habías alcanzado o superado este puntaje en un intento previo, pero todos los desempeños están en buen nivel.`
+    : desempenosBajos.length > 0
+    ? `¡Súper! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje. Aún puedes reforzar los desempeños ${desempenosBajos} para hacerlo perfecto.`
+    : `¡Increíble! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje y todos los desempeños están en excelente nivel.`;
+
 
   async function finalizarLectura() {
     try {
@@ -93,8 +117,56 @@ export default function Retroalimentacion({ puntajes, respuestas, lecturaId }) {
       await fetch("/api/lectura-completada", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lecturaId }),
+        body: JSON.stringify({ lecturaId, xpGanado: XP_OBTENIDA }),
       });
+
+      // 3. Actualizar XP del usuario solo si hay incremento
+      if (incrementoXP > 0) {
+        await fetch("/api/usuario/xp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ xpGanado: incrementoXP }),
+        });
+      }
+
+      // 4. Procesar desafíos desde el frontend
+      // Desafío de lectura perfecta
+      if (XP_OBTENIDA === XP_TOTAL) {
+        await fetch("/api/desafios/progreso", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tipoObjetivo: "lecturas_perfectas",
+            lecturaId,
+          }),
+        });
+      }
+
+      // Desafíos por categoría
+      await fetch("/api/desafios/progreso", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipoObjetivo: "categoria",
+          lecturaId,
+          categoria: lecturaCategoria,
+        }),
+      });
+
+      // Desafíos por desempeño (verificamos cuáles fueron perfectos)
+      for (const [clave, [xpObtenido, xpTotal]] of Object.entries(puntajes)) {
+        if (xpObtenido === xpTotal && xpTotal > 0) {
+          await fetch("/api/desafios/progreso", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              tipoObjetivo: "desempeno_perfecto",
+              lecturaId,
+              desempenoId: parseInt(clave),
+            }),
+          });
+        }
+      }
 
       router.push("/lecturas");
     } catch (error) {

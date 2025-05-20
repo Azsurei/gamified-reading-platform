@@ -1,12 +1,14 @@
 import { db } from "@/db/drizzle";
-import { eq } from "drizzle-orm";
-import { lectura, pregunta, alternativa } from "@/db/schema";
+import { eq, and, max } from "drizzle-orm";
+import { lectura, pregunta, alternativa, lecturaCompletada } from "@/db/schema";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
   req: Request,
   props: { params: Promise<{ id: string }> }
 ) {
+  const { userId } = await auth(); // Clerk en server-side
   const params = await props.params;
   const lecturaId = parseInt(params.id);
 
@@ -62,8 +64,26 @@ export async function GET(
     })
   );
 
+  // Obtener puntaje máximo si el usuario está autenticado
+  let puntajeMaximo: number | null = null;
+
+  if (userId) {
+    const resultadoCompletado = await db
+      .select({ puntajeMaximo: max(lecturaCompletada.puntaje) })
+      .from(lecturaCompletada)
+      .where(
+        and(
+          eq(lecturaCompletada.usuarioId, userId),
+          eq(lecturaCompletada.lecturaId, lecturaId)
+        )
+      );
+
+    puntajeMaximo = resultadoCompletado[0]?.puntajeMaximo ?? null;
+  }
+
   return NextResponse.json({
     lectura: lecturaResult[0],
     preguntas: preguntasConAlternativas,
+    puntajeMaximo,
   });
 }

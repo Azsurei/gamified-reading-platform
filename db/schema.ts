@@ -13,6 +13,7 @@ export const usuario = pgTable("usuario", {
   id: text("id").primaryKey(), // Este es el ID que viene desde Clerk
   nombre: text("nombre").notNull(),
   correo: text("correo").notNull(),
+  imagen: text("imagen"),
   fechaCreacion: timestamp("fecha_creacion", { mode: "date" })
     .defaultNow()
     .notNull(),
@@ -137,8 +138,16 @@ export const lecturaCompletada = pgTable("lectura_completada", {
   usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
   lecturaId: integer("lectura_id").references(() => lectura.id),
   fechaCompletado: timestamp("fecha_completado").defaultNow(),
+  puntaje: integer("puntaje").default(0),
 });
 
+export const lecturaDesafioLog = pgTable("lectura_desafio_log", {
+  id: serial("id").primaryKey(),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  desafioId: integer("desafio_id").references(() => desafio.id),
+  lecturaId: integer("lectura_id").references(() => lectura.id),
+  fechaRegistrada: timestamp("fecha_registrada").defaultNow(),
+});
 
 // RELATIONS
 
@@ -147,11 +156,14 @@ export const usuarioRelations = relations(usuario, ({ many }) => ({
   progresoDesafios: many(progresoDesafio),
   lecturasCompletadas: many(lecturaCompletada),
   comodinesUsuario: many(comodinUsuario),
+  lecturaDesafioLog: many(lecturaDesafioLog),
 }));
 
 export const lecturaRelations = relations(lectura, ({ many }) => ({
   preguntas: many(pregunta),
   lecturasCompletadas: many(lecturaCompletada),
+  comodinesLectura: many(comodinLectura),
+  lecturaDesafioLog: many(lecturaDesafioLog),
 }));
 
 export const desempenoRelations = relations(desempeno, ({ many }) => ({
@@ -165,6 +177,7 @@ export const desafioRelations = relations(desafio, ({ one, many }) => ({
     references: [desempeno.id],
   }),
   progresoDesafios: many(progresoDesafio),
+  lecturaDesafioLog: many(lecturaDesafioLog),
 }));
 
 export const preguntaRelations = relations(pregunta, ({ one, many }) => ({
@@ -255,3 +268,17 @@ export const lecturaCompletadaRelations = relations(lecturaCompletada, ({ one })
   }),
 }));
 
+export const lecturaDesafioLogRelations = relations(lecturaDesafioLog, ({ one }) => ({
+  usuario: one(usuario, {
+    fields: [lecturaDesafioLog.usuarioId],
+    references: [usuario.id],
+  }),
+  desafio: one(desafio, {
+    fields: [lecturaDesafioLog.desafioId],
+    references: [desafio.id],
+  }),
+  lectura: one(lectura, {
+    fields: [lecturaDesafioLog.lecturaId],
+    references: [lectura.id],
+  }),
+}));

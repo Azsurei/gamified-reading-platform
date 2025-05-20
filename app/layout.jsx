@@ -9,8 +9,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider afterSignOutUrl="/">
-      <html lang="en" className="h-full">
-        <body className={`antialiased`}>
+      <html lang="es" className="h-full">
+        <body suppressHydrationWarning={true}>
           {children}
         </body>
       </html>

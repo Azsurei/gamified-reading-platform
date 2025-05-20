@@ -21,6 +21,7 @@ const ModoPage = () => {
     useState(false);
   const totalPasos = preguntas.length + 1; // +1 por la lectura
   //ñconsole.log("El total de pasos es: ", totalPasos);
+  const [puntajeMaximo, setPuntajeMaximo] = useState(null);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -31,6 +32,7 @@ const ModoPage = () => {
         console.log("La data es: ", data);
         setLectura(data.lectura);
         setPreguntas(data.preguntas);
+        setPuntajeMaximo(data.puntajeMaximo);
       } catch (error) {
         console.error(error);
       } finally {
@@ -78,7 +80,7 @@ const ModoPage = () => {
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
-    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} lecturaId={lectura.id} />;
+    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} lecturaId={lectura.id} lecturaCategoria={lectura.categoria} puntajeMaximo={puntajeMaximo} />;
   }
 
   // Layout lectura
