@@ -2,7 +2,7 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import { db } from "@/db/drizzle";
-import { usuario } from "@/db/schema";
+import { usuario, desafio, progresoDesafio } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
@@ -29,6 +29,23 @@ export async function POST(req: NextRequest) {
       await db.insert(usuario).values(nuevoUsuario);
 
       console.log("🆕 Usuario insertado en DB:", nuevoUsuario);
+
+      // Obtener desafíos existentes
+      const desafios = await db.select().from(desafio);
+
+      // Crear progreso inicial para cada desafío
+      const progresosIniciales = desafios.map((d) => ({
+        usuarioId: user.id,
+        desafioId: d.id,
+        progreso: 0,
+      }));
+
+      if (progresosIniciales.length > 0) {
+        await db.insert(progresoDesafio).values(progresosIniciales);
+        console.log(
+          `🎯 Progresos iniciales insertados para ${progresosIniciales.length} desafíos`
+        );
+      }
     } else if (eventType === "user.deleted") {
       await db.delete(usuario).where(eq(usuario.id, id));
       console.log(`🗑️ Usuario eliminado de DB: ${id}`);

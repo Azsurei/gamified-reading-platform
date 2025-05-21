@@ -1,19 +1,75 @@
 "use client";
 
-const userData = {
-  username: "Bruce Estrada Melgarejo",
-  registeredDate: "15 de febrero de 2025",
-  avatar: "/avatar1.svg",
-  stats: [
-    { icon: "/books.svg", value: 10, label: "N° de lecturas leídas" },
-    { icon: "/xp.svg", value: "234 XP", label: "Experiencia total conseguida" },
-    { icon: "/trophy.svg", value: 1, label: "N° de veces en el top 3" },
-    { icon: "/streak.svg", value: 0, label: "días de racha" },
-  ],
-  badges: ["/book-badge.svg", "/score-badge.svg", "/science-badge.svg"],
-};
+import { useEffect, useState } from "react";
 
 const PerfilPage = () => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/perfil`);
+        const data = await res.json();
+        console.log("Data del perfil:", data);
+        setUserData({
+          username: data.username,
+          registeredDate: new Date(data.registeredDate).toLocaleDateString("es-PE", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+          avatar: data.avatarUrl,
+          stats: [
+            {
+              icon: "/books.svg",
+              value: data.stats.lecturasLeidas,
+              label: "N° de lecturas leídas",
+            },
+            {
+              icon: "/xp.svg",
+              value: `${data.stats.experiencia} XP`,
+              label: "Experiencia total conseguida",
+            },
+            {
+              icon: "/trophy.svg",
+              value: data.stats.vecesTop3,
+              label: "N° de veces en el top 3",
+            },
+            {
+              icon: "/streak.svg",
+              value: data.stats.diasRacha,
+              label: "días de racha",
+            },
+          ],
+          badges: data.badges,
+        });
+      } catch (error) {
+        console.error("Error al obtener perfil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg text-gray-600">Cargando perfil...</p>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg text-red-600">No se pudo cargar el perfil.</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="max-w-[1050px] mx-auto px-8 pb-12 flex flex-col items-center gap-6 sm:gap-12">
@@ -55,14 +111,18 @@ const PerfilPage = () => {
         <div className="w-full">
           <h2 className="text-xl font-semibold mb-4">Insignias</h2>
           <div className="flex gap-8 items-center rounded-xl border border-gris overflow-auto p-4">
-            {userData.badges.map((badge, index) => (
-              <img
-                key={index}
-                src={badge}
-                alt={`badge-${index}`}
-                className="w-[50px] h-[50px]"
-              />
-            ))}
+            {userData.badges.length > 0 ? (
+              userData.badges.map((badge, index) => (
+                <img
+                  key={index}
+                  src={badge}
+                  alt={`badge-${index}`}
+                  className="w-[50px] h-[50px]"
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 italic">Aún no has ganado insignias.</p>
+            )}
           </div>
         </div>
 

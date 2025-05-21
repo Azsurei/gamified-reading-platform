@@ -4,6 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  console.log("Petición recibida en /api/analizar-respuesta");
   try {
     const body = await request.json();
     const {
@@ -12,8 +13,6 @@ export async function POST(request: Request) {
       preguntaTipoDeCorreccion,
       respuestaContenido,
     } = body;
-
-    console.log("Cuerpo de la petición:", body);
 
     if (
       typeof lecturaContenido !== "string" ||

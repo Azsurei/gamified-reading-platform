@@ -3,13 +3,13 @@ import { Button } from "@heroui/react";
 
 export const PreguntaCompletar = ({
   pregunta,
-  seleccion,
   setRespuesta,
   onContinuar,
   volverALectura,
   lecturaContenido,
   registrarPuntaje,
 }) => {
+  const [respuestaTexto, setRespuestaTexto] = useState("");
   const [verificado, setVerificado] = useState(false);
   const [retroalimentacion, setRetroalimentacion] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -19,15 +19,16 @@ export const PreguntaCompletar = ({
     // Reiniciar estados cuando cambia la pregunta
     setVerificado(false);
     setResultadoCorreccion(null);
+    setRespuestaTexto("");
+    setRetroalimentacion("");
   }, [pregunta.id]);
 
   const handleVerificar = async () => {
-    const respuestaTexto = seleccion?.contenidoRespuesta;
-    if (!respuestaTexto || respuestaTexto.trim() === "") return;
-
+    if (!respuestaTexto.trim()) return;
     setCargando(true);
 
     try {
+      console.log("Paso aca");
       const res = await fetch("/api/analizar-respuesta", {
         method: "POST",
         headers: {
@@ -42,7 +43,6 @@ export const PreguntaCompletar = ({
       });
 
       const data = await res.json();
-      console.log("La data de la respuesta es: ", data);
 
       if (!res.ok) {
         setRetroalimentacion("Ocurrió un error al analizar la respuesta.");
@@ -111,8 +111,8 @@ export const PreguntaCompletar = ({
           disabled={verificado}
           className="w-full h-full border border-gris rounded-lg p-2 focus:outline-none resize-none"
           placeholder="Escribe tu respuesta aquí..."
-          value={seleccion || ""}
-          onChange={(e) => setRespuesta(e.target.value)}
+          value={respuestaTexto}
+          onChange={(e) => setRespuestaTexto(e.target.value)}
         />
       </div>
 

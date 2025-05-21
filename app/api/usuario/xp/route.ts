@@ -6,7 +6,6 @@ import { usuario } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
-
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
 
@@ -15,21 +14,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { xpGanadoEnLectura } = await req.json();
+    const { xpGanado } = await req.json();
 
-    if (typeof xpGanadoEnLectura !== "number" || xpGanadoEnLectura <= 0) {
+    if (typeof xpGanado !== "number" || xpGanado <= 0) {
       return new Response("xpGanadoEnLectura inválido", { status: 400 });
     }
 
     // Actualiza xpGanado y xpGanadoTotal
     await db
-  .update(usuario)
-  .set({
-    xpGanado: sql`${usuario.xpGanado} + ${xpGanadoEnLectura}`,
-    xpGanadoTotal: sql`${usuario.xpGanadoTotal} + ${xpGanadoEnLectura}`,
-  })
-  .where(eq(usuario.id, userId));
-
+      .update(usuario)
+      .set({
+        xpGanado: sql`${usuario.xpGanado} + ${xpGanado}`,
+        xpGanadoTotal: sql`${usuario.xpGanadoTotal} + ${xpGanado}`,
+      })
+      .where(eq(usuario.id, userId));
 
     return new Response("XP actualizado correctamente", { status: 200 });
   } catch (error) {

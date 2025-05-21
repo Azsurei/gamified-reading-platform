@@ -5,7 +5,6 @@ const letras = ["A", "B", "C", "D"];
 
 export const PreguntaSeleccion = ({
   pregunta,
-  seleccion,
   setRespuesta,
   onContinuar,
   volverALectura,

@@ -86,27 +86,29 @@ export default function Retroalimentacion({
 
   const desempenosBajos = rows
     .filter((row) => parseFloat(row.efectividad) <= 50)
-    .map((row) => row.key)
-    .join(", ");
+    .map((row) => row.key);
 
-  // Mensaje adaptado con incrementoXP y condición de puntajeMaximo
+  const listaDesempenos = desempenosBajos.join(", ");
+  const esPlural = desempenosBajos.length > 1;
+  const palabraDesempeno = esPlural ? "los desempeños" : "el desempeño";
+
   const mensajeDesempenos =
-  puntajeMaximo === null
-    ? desempenosBajos.length > 0
-      ? `¡Buen trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez. Practica más los desempeños ${desempenosBajos} para mejorar aún más.`
-      : `¡Excelente trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez y todos los desempeños están en buen nivel.`
-    : incrementoXP === 0
-    ? desempenosBajos.length > 0
-      ? `¡Buen trabajo! Esta vez no ganaste puntos de experiencia porque ya habías conseguido un puntaje mayor en un intento anterior. Practica más los desempeños ${desempenosBajos} para mejorar aún más.`
-      : `¡Buen intento! Esta vez no ganaste puntos de experiencia porque ya habías alcanzado o superado este puntaje en un intento previo, pero todos los desempeños están en buen nivel.`
-    : desempenosBajos.length > 0
-    ? `¡Súper! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje. Aún puedes reforzar los desempeños ${desempenosBajos} para hacerlo perfecto.`
-    : `¡Increíble! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje y todos los desempeños están en excelente nivel.`;
-
+    puntajeMaximo === null
+      ? desempenosBajos.length > 0
+        ? `¡Buen trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez. Practica más ${palabraDesempeno} ${listaDesempenos} para mejorar aún más.`
+        : `¡Excelente trabajo! Ganaste ${incrementoXP} puntos de experiencia esta vez y todos los desempeños están en buen nivel.`
+      : incrementoXP === 0
+      ? desempenosBajos.length > 0
+        ? `¡Buen trabajo! Esta vez no ganaste puntos de experiencia porque ya habías conseguido un puntaje mayor en un intento anterior. Practica más ${palabraDesempeno} ${listaDesempenos} para mejorar aún más.`
+        : `¡Buen intento! Esta vez no ganaste puntos de experiencia porque ya habías alcanzado o superado este puntaje en un intento previo, pero todos los desempeños están en buen nivel.`
+      : desempenosBajos.length > 0
+      ? `¡Súper! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje. Aún puedes reforzar ${palabraDesempeno} ${listaDesempenos} para hacerlo perfecto.`
+      : `¡Increíble! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje y todos los desempeños están en excelente nivel.`;
 
   async function finalizarLectura() {
     try {
       // 1. Guardar respuestas
+      console.log("Respuestas a guardar:", respuestas);
       await fetch("/api/respuestas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,6 +123,7 @@ export default function Retroalimentacion({
       });
 
       // 3. Actualizar XP del usuario solo si hay incremento
+      console.log("El incrementoXP es", incrementoXP);
       if (incrementoXP > 0) {
         await fetch("/api/usuario/xp", {
           method: "POST",

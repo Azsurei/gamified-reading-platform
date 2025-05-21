@@ -225,7 +225,6 @@ const ModoPage = () => {
           {pregunta.tipo === "seleccion" ? (
             <PreguntaSeleccion
               pregunta={pregunta}
-              seleccion={respuestas[pregunta.id]}
               setRespuesta={(valor) =>
                 setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
               }
@@ -236,7 +235,6 @@ const ModoPage = () => {
           ) : (
             <PreguntaCompletar
               pregunta={pregunta}
-              seleccion={respuestas[pregunta.id]}
               setRespuesta={(valor) =>
                 setRespuestas((prev) => ({ ...prev, [pregunta.id]: valor }))
               }

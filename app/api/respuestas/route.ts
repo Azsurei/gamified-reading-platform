@@ -13,14 +13,16 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    if (!Array.isArray(body)) {
+    if (typeof body !== "object" || Array.isArray(body) || body === null) {
       return NextResponse.json(
-        { error: "Formato inválido. Se esperaba un array de respuestas." },
+        { error: "Formato inválido. Se esperaba un objeto con respuestas." },
         { status: 400 }
       );
     }
 
-    const respuestasFormateadas = body.map((r) => ({
+    const respuestasArray = Object.values(body);
+
+    const respuestasFormateadas = respuestasArray.map((r: any) => ({
       preguntaId: r.preguntaId,
       usuarioId: userId,
       contenidoRespuesta: r.contenidoRespuesta,
@@ -30,9 +32,7 @@ export async function POST(req: Request) {
       puntajeObtenido: r.puntajeObtenido,
       // fechaRespuesta y numeroReintento se omiten para usar valores por defecto
     }));
-
-    console.log("Respuestas formateadas:", respuestasFormateadas);
-
+    
     await db.insert(respuesta).values(respuestasFormateadas);
 
     return NextResponse.json({ message: "Respuestas guardadas exitosamente." });
