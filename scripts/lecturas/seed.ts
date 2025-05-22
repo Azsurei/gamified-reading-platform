@@ -16,7 +16,7 @@ async function seed() {
     titulo: "La vida en Marte: ¿una posibilidad futura?",
     descripcion: "Texto sobre los descubrimientos científicos en Marte y el debate sobre su colonización.",
     imagen: "/marte.svg",
-    categoria: "ciencia",
+    categoria: "Ciencia",
     tipoTexto: "expositivo",
     contenido: `Durante siglos, la humanidad ha mirado al cielo con la esperanza de encontrar vida más allá de la Tierra. Uno de los planetas que más ha despertado curiosidad es Marte. Este planeta rojo, nuestro vecino en el sistema solar, ha sido objeto de múltiples estudios científicos debido a sus condiciones geológicas y climáticas que podrían, en algún momento, haber permitido la vida.
 

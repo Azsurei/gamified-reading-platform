@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import BarChart from "@/components/bar-chart";
+
+const RadarChart = dynamic(() => import("@/components/radar-chart"), {
+  ssr: false,
+});
+
 
 const PerfilPage = () => {
   const [userData, setUserData] = useState(null);
@@ -14,11 +21,14 @@ const PerfilPage = () => {
         console.log("Data del perfil:", data);
         setUserData({
           username: data.username,
-          registeredDate: new Date(data.registeredDate).toLocaleDateString("es-PE", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
+          registeredDate: new Date(data.registeredDate).toLocaleDateString(
+            "es-PE",
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }
+          ),
           avatar: data.avatarUrl,
           stats: [
             {
@@ -43,6 +53,8 @@ const PerfilPage = () => {
             },
           ],
           badges: data.badges,
+          desempeno: data.desempeno,
+          categoriasLeidas: data.categoriasLeidas,
         });
       } catch (error) {
         console.error("Error al obtener perfil:", error);
@@ -121,7 +133,9 @@ const PerfilPage = () => {
                 />
               ))
             ) : (
-              <p className="text-gray-500 italic">Aún no has ganado insignias.</p>
+              <p className="text-gray-500 italic">
+                Aún no has ganado insignias.
+              </p>
             )}
           </div>
         </div>
@@ -129,7 +143,19 @@ const PerfilPage = () => {
         {/* Gráficos (encabezado) */}
         <div className="w-full">
           <h2 className="text-xl font-semibold mb-4">Gráficos</h2>
-          {/* Aquí agregarás tus componentes de gráficos luego */}
+
+          {/* Radar Chart */}
+          <div className="w-full bg-white p-4 border rounded-xl">
+            <RadarChart data={userData.desempeno} />
+          </div>
+        </div>
+
+        {/* Gráfico de barras */}
+        <div className="w-full">
+          <h2 className="text-xl font-semibold mb-4">Lecturas completadas por categoría</h2>
+          <div className="w-full bg-white p-4 border rounded-xl">
+            <BarChart data={userData.categoriasLeidas} />
+          </div>
         </div>
       </div>
     </div>
