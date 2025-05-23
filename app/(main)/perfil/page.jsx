@@ -3,10 +3,151 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import BarChart from "@/components/bar-chart";
+import BarChart1 from "@/components/bar-chart2";
+import EvolucionChart from "@/components/evolution-chart";
 
 const RadarChart = dynamic(() => import("@/components/radar-chart"), {
   ssr: false,
 });
+
+const mockEvolucionLectura = [
+  {
+    puntaje: 85,
+    fecha: "2025-05-20",
+    titulo: "El ciclo del agua",
+  },
+  {
+    puntaje: 90,
+    fecha: "2025-05-20",
+    titulo: "La Revolución Francesa",
+  },
+  {
+    puntaje: 78,
+    fecha: "2025-05-20",
+    titulo: "Cuentos de Poe",
+  },
+  {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+    {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+    {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+    {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+    {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+    {
+    puntaje: 92,
+    fecha: "2025-05-20",
+    titulo: "Arte del Renacimiento",
+  },
+  {
+    puntaje: 88,
+    fecha: "2025-05-20",
+    titulo: "El sistema solar",
+  },
+  {
+    puntaje: 95,
+    fecha: "2025-05-21",
+    titulo: "Mitología griega",
+  },
+  {
+    puntaje: 80,
+    fecha: "2025-05-21",
+    titulo: "Fábulas clásicas",
+  },
+
+];
 
 
 const PerfilPage = () => {
@@ -55,6 +196,8 @@ const PerfilPage = () => {
           badges: data.badges,
           desempeno: data.desempeno,
           categoriasLeidas: data.categoriasLeidas,
+          promedioPorCategoria: data.promedioPorCategoria,
+          evolucionLectura: data.evolucionLectura,
         });
       } catch (error) {
         console.error("Error al obtener perfil:", error);
@@ -141,20 +284,21 @@ const PerfilPage = () => {
         </div>
 
         {/* Gráficos (encabezado) */}
-        <div className="w-full">
-          <h2 className="text-xl font-semibold mb-4">Gráficos</h2>
+        <div className="w-full flex flex-col gap-4">
+          <h2 className="text-xl font-semibold">Gráficos</h2>
 
           {/* Radar Chart */}
           <div className="w-full bg-white p-4 border rounded-xl">
             <RadarChart data={userData.desempeno} />
           </div>
-        </div>
-
-        {/* Gráfico de barras */}
-        <div className="w-full">
-          <h2 className="text-xl font-semibold mb-4">Lecturas completadas por categoría</h2>
           <div className="w-full bg-white p-4 border rounded-xl">
             <BarChart data={userData.categoriasLeidas} />
+          </div>
+          <div className="w-full bg-white p-4 border rounded-xl">
+            <BarChart1 data={userData.promedioPorCategoria} />
+          </div>
+          <div className="w-full bg-white p-4 border rounded-xl">
+            <EvolucionChart data={userData.evolucionLectura} />
           </div>
         </div>
       </div>

@@ -7,11 +7,11 @@ import Link from "next/link";
 
 const categories = [
   { id: "all", label: "Todas" },
-  { id: "literatura", label: "Literatura clásica" },
-  { id: "historia", label: "Historia" },
-  { id: "ciencia", label: "Ciencia" },
-  { id: "entretenimiento", label: "Entretenimiento" },
-  { id: "arte", label: "Arte" },
+  { id: "Literatura Clásica", label: "Literatura clásica" },
+  { id: "Historia", label: "Historia" },
+  { id: "Ciencia", label: "Ciencia" },
+  { id: "Entretenimiento", label: "Entretenimiento" },
+  { id: "Arte", label: "Arte" },
 ];
 
 const LearnPage = () => {

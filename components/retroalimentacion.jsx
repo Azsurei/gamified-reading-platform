@@ -45,6 +45,7 @@ export default function Retroalimentacion({
   lecturaId,
   lecturaCategoria,
   puntajeMaximo,
+  numeroReintento
 }) {
   const router = useRouter();
 
@@ -112,14 +113,14 @@ export default function Retroalimentacion({
       await fetch("/api/respuestas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(respuestas),
+        body: JSON.stringify({numeroReintento, respuestas}),
       });
 
       // 2. Registrar lectura completada
       await fetch("/api/lectura-completada", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lecturaId, xpGanado: XP_OBTENIDA }),
+        body: JSON.stringify({ lecturaId, xpGanado: XP_OBTENIDA, numeroReintento }),
       });
 
       // 3. Actualizar XP del usuario solo si hay incremento

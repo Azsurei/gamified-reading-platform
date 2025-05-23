@@ -22,6 +22,7 @@ const ModoPage = () => {
   const totalPasos = preguntas.length + 1; // +1 por la lectura
   //ñconsole.log("El total de pasos es: ", totalPasos);
   const [puntajeMaximo, setPuntajeMaximo] = useState(null);
+  const [numeroReintento, setNumeroReintento] = useState(0);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -33,6 +34,7 @@ const ModoPage = () => {
         setLectura(data.lectura);
         setPreguntas(data.preguntas);
         setPuntajeMaximo(data.puntajeMaximo);
+        setNumeroReintento(data.ultimoReintento);
       } catch (error) {
         console.error(error);
       } finally {
@@ -80,7 +82,7 @@ const ModoPage = () => {
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
-    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} lecturaId={lectura.id} lecturaCategoria={lectura.categoria} puntajeMaximo={puntajeMaximo} />;
+    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} lecturaId={lectura.id} lecturaCategoria={lectura.categoria} puntajeMaximo={puntajeMaximo} numeroReintento={numeroReintento} />;
   }
 
   // Layout lectura

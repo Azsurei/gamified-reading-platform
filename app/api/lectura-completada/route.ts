@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const { lecturaId, xpGanado } = await req.json();
+    const { lecturaId, xpGanado, numeroReintento } = await req.json();
 
     if (!lecturaId) {
       return NextResponse.json({ error: "lecturaId es requerido" }, { status: 400 });
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       usuarioId: userId,
       lecturaId,
       puntaje: xpGanado,
+      numeroReintento,
     });
 
     return NextResponse.json({ message: "Lectura completada registrada" });

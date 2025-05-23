@@ -139,6 +139,7 @@ export const lecturaCompletada = pgTable("lectura_completada", {
   lecturaId: integer("lectura_id").references(() => lectura.id),
   fechaCompletado: timestamp("fecha_completado").defaultNow(),
   puntaje: integer("puntaje").default(0),
+  numeroReintento: integer("numero_reintento").default(0),
 });
 
 export const lecturaDesafioLog = pgTable("lectura_desafio_log", {

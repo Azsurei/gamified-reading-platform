@@ -66,10 +66,14 @@ export async function GET(
 
   // Obtener puntaje máximo si el usuario está autenticado
   let puntajeMaximo: number | null = null;
+  let ultimoReintento: number | null = null;
 
   if (userId) {
     const resultadoCompletado = await db
-      .select({ puntajeMaximo: max(lecturaCompletada.puntaje) })
+      .select({
+        puntajeMaximo: max(lecturaCompletada.puntaje),
+        ultimoReintento: max(lecturaCompletada.numeroReintento),
+      })
       .from(lecturaCompletada)
       .where(
         and(
@@ -79,11 +83,13 @@ export async function GET(
       );
 
     puntajeMaximo = resultadoCompletado[0]?.puntajeMaximo ?? null;
+    ultimoReintento = resultadoCompletado[0]?.ultimoReintento ?? null;
   }
 
   return NextResponse.json({
     lectura: lecturaResult[0],
     preguntas: preguntasConAlternativas,
     puntajeMaximo,
+    ultimoReintento,
   });
 }
