@@ -18,7 +18,7 @@ const RadarChart = ({ data }) => {
       type: "line",
     },
     title: {
-      text: "Desempeño por habilidad lectora",
+      text: "Efectividad por desempeño",
     },
     xAxis: {
       categories: data.map((d) => d.nombreDesempeno),

@@ -113,7 +113,7 @@ export default function Retroalimentacion({
       await fetch("/api/respuestas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({numeroReintento, respuestas}),
+        body: JSON.stringify({respuestas}),
       });
 
       // 2. Registrar lectura completada

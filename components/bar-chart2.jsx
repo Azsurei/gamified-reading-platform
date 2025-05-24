@@ -10,7 +10,7 @@ const BarChartPromedioPorCategoria = ({ data }) => {
       type: "column",
     },
     title: {
-      text: "Puntaje promedio por categoría",
+      text: "Efectividad por categoría",
     },
     xAxis: {
       categories: data.map((d) => d.categoria),
@@ -19,11 +19,11 @@ const BarChartPromedioPorCategoria = ({ data }) => {
     yAxis: {
       min: 0,
       max: 100,
-      title: { text: "Puntaje promedio (%)" },
+      title: { text: "Efectividad (%)" },
     },
     tooltip: {
       formatter: function () {
-        return `<b>${this.y}%</b> de puntaje promedio`;
+        return `<b>${this.y}%</b> de efectividad en <b>${this.x}</b>`;
       },
     },
     legend: {

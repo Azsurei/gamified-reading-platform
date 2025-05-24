@@ -70,7 +70,8 @@ export async function GET(req: Request) {
     .filter((p) => p.progreso >= p.meta)
     .map((p) => p.imagen);
 
-  // 5. Gráfico de radar
+  // 5. Gráfico de radar (último intento por lectura)
+
   const desempenoStats = await db
     .select({
       nombreDesempeno: desempeno.nombre,
@@ -85,32 +86,25 @@ export async function GET(req: Request) {
     .innerJoin(pregunta, eq(respuesta.preguntaId, pregunta.id))
     .innerJoin(desempeno, eq(pregunta.desempenoId, desempeno.id))
     .innerJoin(
-      // Subconsulta: mejor intento por lectura
+      // Subconsulta: último intento por lectura
       sql`
-      (
-        SELECT lectura_id, MAX(puntaje) AS max_puntaje, usuario_id
-        FROM lectura_completada
-        WHERE usuario_id = ${userId}
-        GROUP BY lectura_id, usuario_id
-      ) AS mejores_intentos
-    `,
+    (
+      SELECT lectura_id, MAX(numero_reintento) AS ultimo_intento, usuario_id
+      FROM lectura_completada
+      WHERE usuario_id = ${userId}
+      GROUP BY lectura_id, usuario_id
+    ) AS ultimos_intentos
+  `,
       sql`
-      mejores_intentos.lectura_id = pregunta.lectura_id
-      AND mejores_intentos.usuario_id = ${userId}
-    `
+    ultimos_intentos.lectura_id = pregunta.lectura_id
+    AND ultimos_intentos.usuario_id = ${userId}
+  `
     )
     .where(
       and(
         eq(respuesta.usuarioId, userId),
         sql`
-      respuesta.numero_reintento = (
-        SELECT numero_reintento
-        FROM lectura_completada
-        WHERE lectura_completada.usuario_id = ${userId}
-        AND lectura_completada.lectura_id = pregunta.lectura_id
-        AND lectura_completada.puntaje = mejores_intentos.max_puntaje
-        LIMIT 1
-      )
+      respuesta.numero_reintento = ultimos_intentos.ultimo_intento
     `
       )
     )
@@ -150,53 +144,95 @@ export async function GET(req: Request) {
   }));
 
   // 7. Tercer grafico
-  const subquery = db
+  // Subconsulta: obtener el último reintento de cada lectura
+  const subqueryUltimos = db
     .select({
       lecturaId: lecturaCompletada.lecturaId,
-      puntaje: sql`MAX(${lecturaCompletada.puntaje})`.as("puntaje"),
+      ultimoIntento: sql`MAX(${lecturaCompletada.numeroReintento})`.as(
+        "ultimoIntento"
+      ),
     })
     .from(lecturaCompletada)
     .where(eq(lecturaCompletada.usuarioId, userId))
     .groupBy(lecturaCompletada.lecturaId)
+    .as("ultimos");
+
+  // Unimos para obtener el puntaje del último intento de cada lectura
+  const subqueryConPuntaje = db
+    .select({
+      lecturaId: lecturaCompletada.lecturaId,
+      puntaje: lecturaCompletada.puntaje,
+    })
+    .from(lecturaCompletada)
+    .innerJoin(
+      subqueryUltimos,
+      and(
+        eq(lecturaCompletada.lecturaId, subqueryUltimos.lecturaId),
+        eq(lecturaCompletada.numeroReintento, subqueryUltimos.ultimoIntento)
+      )
+    )
     .as("sub");
 
+  // Luego usas esta subquery para calcular el promedio por categoría
   const puntajesPorCategoria = await db
     .select({
       categoria: lectura.categoria,
       promedioPuntaje: sql`ROUND(AVG(sub.puntaje)::decimal, 2)`.mapWith(Number),
     })
-    .from(subquery)
-    .innerJoin(lectura, eq(lectura.id, subquery.lecturaId))
+    .from(subqueryConPuntaje)
+    .innerJoin(lectura, eq(lectura.id, subqueryConPuntaje.lecturaId))
     .groupBy(lectura.categoria);
 
-  // Convertimos a un mapa para acceder más fácil por categoría
+  // Mapeo final
   const mapaPuntajes = Object.fromEntries(
     puntajesPorCategoria.map((item) => [item.categoria, item.promedioPuntaje])
   );
 
-  // Creamos el array final con todas las categorías
   const promedioPorCategoria = TODAS_LAS_CATEGORIAS.map((categoria) => ({
     categoria,
-    promedioPuntaje: mapaPuntajes[categoria] ?? 0, // o null si prefieres
+    promedioPuntaje: mapaPuntajes[categoria] ?? 0,
   }));
 
   // 8. último gráfico
-  const mejoresLecturasOrdenadas = await db
-  .select({
-    puntaje: sql`MAX(${lecturaCompletada.puntaje})`.mapWith(Number),
-    fecha: lecturaCompletada.fechaCompletado,
-  })
-  .from(lecturaCompletada)
-  .where(eq(lecturaCompletada.usuarioId, userId))
-  .groupBy(lecturaCompletada.lecturaId, lecturaCompletada.fechaCompletado)
-  .orderBy(asc(lecturaCompletada.fechaCompletado));
+  /* const mejoresLecturasOrdenadas = await db
+    .select({
+      puntaje: sql`MAX(${lecturaCompletada.puntaje})`.mapWith(Number),
+      fecha: lecturaCompletada.fechaCompletado,
+    })
+    .from(lecturaCompletada)
+    .where(eq(lecturaCompletada.usuarioId, userId))
+    .groupBy(lecturaCompletada.lecturaId, lecturaCompletada.fechaCompletado)
+    .orderBy(asc(lecturaCompletada.fechaCompletado));
 
   const evolucionLectura = mejoresLecturasOrdenadas.map((item, index) => ({
-  lectura: `Lectura ${index + 1}`,
-  puntaje: item.puntaje,
-  fecha: item.fecha.toISOString().split("T")[0], // opcional si quieres usar tooltip con fecha
-}));
+    lectura: `Lectura ${index + 1}`,
+    puntaje: item.puntaje,
+    fecha: item.fecha.toISOString().split("T")[0], // opcional si quieres usar tooltip con fecha
+  })); */
+  const intentos = await db
+    .select({
+      titulo: lectura.titulo,
+      numeroReintento: lecturaCompletada.numeroReintento,
+      fecha: lecturaCompletada.fechaCompletado,
+      efectividad: lecturaCompletada.puntaje,
+    })
+    .from(lecturaCompletada)
+    .innerJoin(lectura, eq(lecturaCompletada.lecturaId, lectura.id))
+    .where(eq(lecturaCompletada.usuarioId, userId));
 
+    console.log("intentos", intentos);
+
+  const evolucionLectura = intentos
+    .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+    .map((item, index) => ({
+      titulo: item.titulo,
+      numeroReintento: item.numeroReintento,
+      fecha: item.fecha.toISOString().split("T")[0],
+      efectividad: item.efectividad,
+      numero: index + 1,
+    }));
+
+    console.log("evolucionLectura", evolucionLectura);
 
   return NextResponse.json({
     username: user.nombre,

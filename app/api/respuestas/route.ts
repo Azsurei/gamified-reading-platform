@@ -11,32 +11,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await req.json();
-
-    const { numeroReintento, respuestas } = body;
-
-    if (!Array.isArray(respuestas) || typeof numeroReintento !== "number") {
+    const { respuestas } = await req.json();
+    if (!respuestas) {
       return NextResponse.json(
-        {
-          error:
-            "Formato inválido. Se esperaba un array de respuestas y un número de reintento.",
-        },
+        { error: "Respuestas no proporcionadas" },
         { status: 400 }
       );
     }
-
-    const respuestasFormateadas = respuestas.map((r: any) => ({
-      preguntaId: r.preguntaId,
+    console.log("Respuestas recibidas:", respuestas);
+    //Respuestas es un objeto con el id de la pregunta y un array de respuestas
+    const respuestasArray = Object.values(respuestas);
+    console.log("Respuestas transformadas:", respuestasArray);
+    const respuestasConUsuario = respuestasArray.map((r: object) => ({
+      ...r,
       usuarioId: userId,
-      contenidoRespuesta: r.contenidoRespuesta,
-      alternativaId: r.alternativaId ?? null,
-      retroalimentacion: r.retroalimentacion ?? null,
-      resultado: r.resultado,
-      puntajeObtenido: r.puntajeObtenido,
-      numeroReintento,
     }));
-
-    await db.insert(respuesta).values(respuestasFormateadas);
+    await db.insert(respuesta).values(respuestasConUsuario);
 
     return NextResponse.json({ message: "Respuestas guardadas exitosamente." });
   } catch (error) {

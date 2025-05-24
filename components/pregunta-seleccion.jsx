@@ -9,6 +9,7 @@ export const PreguntaSeleccion = ({
   onContinuar,
   volverALectura,
   registrarPuntaje,
+  numeroReintento,
 }) => {
   const [verificado, setVerificado] = useState(false);
   const [esCorrecta, setEsCorrecta] = useState(false);
@@ -37,6 +38,7 @@ export const PreguntaSeleccion = ({
       alternativaId: respuestaSeleccionada.alternativaId,
       resultado: correcta ? "correcto" : "incorrecto",
       puntajeObtenido: puntaje,
+      numeroReintento: numeroReintento + 1,
     });
   };
 

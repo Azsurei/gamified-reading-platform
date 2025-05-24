@@ -8,6 +8,7 @@ export const PreguntaCompletar = ({
   volverALectura,
   lecturaContenido,
   registrarPuntaje,
+  numeroReintento
 }) => {
   const [respuestaTexto, setRespuestaTexto] = useState("");
   const [verificado, setVerificado] = useState(false);
@@ -28,7 +29,6 @@ export const PreguntaCompletar = ({
     setCargando(true);
 
     try {
-      console.log("Paso aca");
       const res = await fetch("/api/analizar-respuesta", {
         method: "POST",
         headers: {
@@ -72,6 +72,7 @@ export const PreguntaCompletar = ({
           retroalimentacion: retro,
           resultado: resultado,
           puntajeObtenido: puntaje,
+          numeroReintento: numeroReintento + 1,
         });
       }
       setVerificado(true);

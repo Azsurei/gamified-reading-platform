@@ -14,19 +14,25 @@ export async function POST(req: Request) {
     const { lecturaId, xpGanado, numeroReintento } = await req.json();
 
     if (!lecturaId) {
-      return NextResponse.json({ error: "lecturaId es requerido" }, { status: 400 });
+      return NextResponse.json(
+        { error: "lecturaId es requerido" },
+        { status: 400 }
+      );
     }
 
     await db.insert(lecturaCompletada).values({
       usuarioId: userId,
       lecturaId,
       puntaje: xpGanado,
-      numeroReintento,
+      numeroReintento: numeroReintento + 1,
     });
 
     return NextResponse.json({ message: "Lectura completada registrada" });
   } catch (error) {
     console.error("Error al registrar lectura completada:", error);
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 }
+    );
   }
 }

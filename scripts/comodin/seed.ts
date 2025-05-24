@@ -13,23 +13,23 @@ async function seed() {
   // 2. Inserta nueva comodin
   await db.insert(schema.tipoComodin).values([
     {
-      nombre: "Resaltar estructuras del texto",
+      nombre: "Resumir lectura",
       descripcion:
-        "Resalta las secciones de introducción, desarrollo y conclusión.",
-      costoXp: 30,
-      imagen: "/estructura.svg",
+        "Condensa el texto completo en un resumen, aporta un panorama detallado y global.",
+      costoXp: 50,
+      imagen: "/estrella.svg",
     },
     {
       nombre: "Mostrar idea principal",
       descripcion: "Destacar la idea principal del texto.",
-      costoXp: 20,
+      costoXp: 30,
       imagen: "/idea.svg",
     },
     {
-      nombre: "Mostrar palabras claves destacadas",
-      descripcion: "Marca palabras clave importantes en el texto.",
-      costoXp: 20,
-      imagen: "/estrella.svg",
+      nombre: "Resaltar palabras claves destacadas",
+      descripcion: "Resalta palabras clave importantes en el texto.",
+      costoXp: 15,
+      imagen: "/estructura.svg",
     },
   ]);
 

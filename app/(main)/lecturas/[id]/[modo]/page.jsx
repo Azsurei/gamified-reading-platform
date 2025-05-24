@@ -35,6 +35,7 @@ const ModoPage = () => {
         setPreguntas(data.preguntas);
         setPuntajeMaximo(data.puntajeMaximo);
         setNumeroReintento(data.ultimoReintento);
+        console.log("El ultimo reintento es: ", data.ultimoReintento);
       } catch (error) {
         console.error(error);
       } finally {
@@ -233,6 +234,7 @@ const ModoPage = () => {
               onContinuar={avanzarPaso}
               volverALectura={irALectura}
               registrarPuntaje={registrarPuntaje}
+              numeroReintento={numeroReintento}
             />
           ) : (
             <PreguntaCompletar
@@ -244,6 +246,7 @@ const ModoPage = () => {
               volverALectura={irALectura}
               lecturaContenido={lectura.contenido}
               registrarPuntaje={registrarPuntaje}
+              numeroReintento={numeroReintento}
             />
           )}
         </div>
