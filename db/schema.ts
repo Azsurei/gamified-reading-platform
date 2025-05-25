@@ -8,6 +8,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export const usuario = pgTable("usuario", {
   id: text("id").primaryKey(), // Este es el ID que viene desde Clerk
@@ -121,21 +122,25 @@ export const comodinLectura = pgTable("comodin_lectura", {
   tipoComodinId: integer("tipo_comodin_id").references(() => tipoComodin.id, {
     onDelete: "cascade",
   }),
-  estructuraTexto: text("estructura_texto"), // Ej. JSON o delimitado
+  resumenTexto: text("resumen_texto"),
   ideaPrincipal: text("idea_principal"),
-  palabrasClave: text("palabras_clave"), // Ej. palabras separadas por coma
+  palabrasClave: text("palabras_clave").array().default(sql`'{}'::text[]`), // Ej. palabras separadas por coma
 });
 
 export const comodinUsuario = pgTable("comodin_usuario", {
   id: serial("id").primaryKey(),
-  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(
+    () => usuario.id
+  ),
   tipoComodinId: integer("tipo_comodin_id").references(() => tipoComodin.id),
   cantidad: integer("cantidad").default(0),
 });
 
 export const lecturaCompletada = pgTable("lectura_completada", {
   id: serial("id").primaryKey(),
-  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(
+    () => usuario.id
+  ),
   lecturaId: integer("lectura_id").references(() => lectura.id),
   fechaCompletado: timestamp("fecha_completado").defaultNow(),
   puntaje: integer("puntaje").default(0),
@@ -144,7 +149,9 @@ export const lecturaCompletada = pgTable("lectura_completada", {
 
 export const lecturaDesafioLog = pgTable("lectura_desafio_log", {
   id: serial("id").primaryKey(),
-  usuarioId: varchar("usuario_id", { length: 255 }).references(() => usuario.id),
+  usuarioId: varchar("usuario_id", { length: 255 }).references(
+    () => usuario.id
+  ),
   desafioId: integer("desafio_id").references(() => desafio.id),
   lecturaId: integer("lectura_id").references(() => lectura.id),
   fechaRegistrada: timestamp("fecha_registrada").defaultNow(),
@@ -258,28 +265,34 @@ export const comodinUsuarioRelations = relations(comodinUsuario, ({ one }) => ({
   }),
 }));
 
-export const lecturaCompletadaRelations = relations(lecturaCompletada, ({ one }) => ({
-  usuario: one(usuario, {
-    fields: [lecturaCompletada.usuarioId],
-    references: [usuario.id],
-  }),
-  lectura: one(lectura, {
-    fields: [lecturaCompletada.lecturaId],
-    references: [lectura.id],
-  }),
-}));
+export const lecturaCompletadaRelations = relations(
+  lecturaCompletada,
+  ({ one }) => ({
+    usuario: one(usuario, {
+      fields: [lecturaCompletada.usuarioId],
+      references: [usuario.id],
+    }),
+    lectura: one(lectura, {
+      fields: [lecturaCompletada.lecturaId],
+      references: [lectura.id],
+    }),
+  })
+);
 
-export const lecturaDesafioLogRelations = relations(lecturaDesafioLog, ({ one }) => ({
-  usuario: one(usuario, {
-    fields: [lecturaDesafioLog.usuarioId],
-    references: [usuario.id],
-  }),
-  desafio: one(desafio, {
-    fields: [lecturaDesafioLog.desafioId],
-    references: [desafio.id],
-  }),
-  lectura: one(lectura, {
-    fields: [lecturaDesafioLog.lecturaId],
-    references: [lectura.id],
-  }),
-}));
+export const lecturaDesafioLogRelations = relations(
+  lecturaDesafioLog,
+  ({ one }) => ({
+    usuario: one(usuario, {
+      fields: [lecturaDesafioLog.usuarioId],
+      references: [usuario.id],
+    }),
+    desafio: one(desafio, {
+      fields: [lecturaDesafioLog.desafioId],
+      references: [desafio.id],
+    }),
+    lectura: one(lectura, {
+      fields: [lecturaDesafioLog.lecturaId],
+      references: [lectura.id],
+    }),
+  })
+);

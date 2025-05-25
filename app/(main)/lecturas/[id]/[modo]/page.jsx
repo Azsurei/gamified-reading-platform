@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Progress } from "@heroui/react";
+import {
+  Button,
+  Progress,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@heroui/react";
 import { PreguntaSeleccion } from "@/components/pregunta-seleccion";
 import { PreguntaCompletar } from "@/components/pregunta-completar";
 import Retroalimentacion from "@/components/retroalimentacion";
@@ -23,6 +32,19 @@ const ModoPage = () => {
   //ñconsole.log("El total de pasos es: ", totalPasos);
   const [puntajeMaximo, setPuntajeMaximo] = useState(null);
   const [numeroReintento, setNumeroReintento] = useState(0);
+  const [comodines, setComodines] = useState([]);
+  const [comodinActivo, setComodinActivo] = useState(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isOpen1,
+    onOpen: onOpen1,
+    onOpenChange: onOpenChange1,
+  } = useDisclosure();
+  const [inventarioComodin1, setInventarioComodin1] = useState(null);
+  const [inventarioComodin2, setInventarioComodin2] = useState(null);
+  const [inventarioComodin3, setInventarioComodin3] = useState(null);
+  const [comodinesUsados, setComodinesUsados] = useState([]);
+  const [comodinPendiente, setComodinPendiente] = useState(null);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -30,12 +52,24 @@ const ModoPage = () => {
         const res = await fetch(`/api/lecturas/${id}`);
         if (!res.ok) throw new Error("Lectura no encontrada");
         const data = await res.json();
-        console.log("La data es: ", data);
         setLectura(data.lectura);
         setPreguntas(data.preguntas);
         setPuntajeMaximo(data.puntajeMaximo);
         setNumeroReintento(data.ultimoReintento);
-        console.log("El ultimo reintento es: ", data.ultimoReintento);
+
+        // Si es modo aprendizaje, trae también los comodines
+        if (modo === "aprendizaje") {
+          const comodinesRes = await fetch(`/api/lecturas/${id}/comodines`);
+          if (comodinesRes.ok) {
+            const comodinesData = await comodinesRes.json();
+            setComodines(comodinesData.comodines);
+            setInventarioComodin1(comodinesData.inventarioComodin1);
+            setInventarioComodin2(comodinesData.inventarioComodin2);
+            setInventarioComodin3(comodinesData.inventarioComodin3);
+          } else {
+            console.warn("No se pudieron obtener los comodines");
+          }
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -44,7 +78,7 @@ const ModoPage = () => {
     };
 
     if (id) fetchLectura();
-  }, [id]);
+  }, [id, modo]);
 
   const avanzarPaso = () => {
     if (pasoActual === totalPasos - 1) {
@@ -69,21 +103,59 @@ const ModoPage = () => {
   };
 
   const registrarPuntaje = (desempeno, valor, totalPosible) => {
-  setPuntajes((prev) => {
-    const [prevObtenido = 0, prevTotal = 0] = prev[desempeno] || [];
-    return {
-      ...prev,
-      [desempeno]: [prevObtenido + valor, prevTotal + totalPosible],
-    };
-  });
-};
+    setPuntajes((prev) => {
+      const [prevObtenido = 0, prevTotal = 0] = prev[desempeno] || [];
+      return {
+        ...prev,
+        [desempeno]: [prevObtenido + valor, prevTotal + totalPosible],
+      };
+    });
+  };
 
+  const abrirComodin = (tipo) => {
+    const encontrado = comodines.find((c) => c.tipoComodinId === tipo);
+
+    let disponible = false;
+    if (tipo === 1 && inventarioComodin1 > 0) disponible = true;
+    if (tipo === 2 && inventarioComodin2 > 0) disponible = true;
+    if (tipo === 3 && inventarioComodin3 > 0) disponible = true;
+
+    if (!encontrado || !disponible) return;
+
+    setComodinActivo(encontrado);
+
+    if (comodinesUsados.includes(tipo)) {
+      // Ya fue usado, se abre directamente el modal del comodín
+      onOpen();
+    } else {
+      // Aún no ha sido usado, se abre el modal de confirmación
+      setComodinPendiente(tipo);
+      onOpen1();
+    }
+  };
+
+  const confirmarUso = () => {
+    if (comodinPendiente !== null) {
+      setComodinesUsados((prev) => [...prev, comodinPendiente]);
+      onOpen(); // abrir el modal real
+      setComodinPendiente(null);
+    }
+  };
 
   if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
-    return <Retroalimentacion puntajes={puntajes} respuestas={respuestas} lecturaId={lectura.id} lecturaCategoria={lectura.categoria} puntajeMaximo={puntajeMaximo} numeroReintento={numeroReintento} />;
+    return (
+      <Retroalimentacion
+        puntajes={puntajes}
+        respuestas={respuestas}
+        lecturaId={lectura.id}
+        lecturaCategoria={lectura.categoria}
+        puntajeMaximo={puntajeMaximo}
+        numeroReintento={numeroReintento}
+      />
+    );
   }
 
   // Layout lectura
@@ -107,9 +179,45 @@ const ModoPage = () => {
           {/* Iconos de comodines solo si el modo es aprendizaje */}
           {modo === "aprendizaje" && pasoActual === 0 ? (
             <div className="flex gap-8">
-              <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12" />
-              <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />
-              <img src="/estrella.svg" alt="Estrella" className="w-12 h-12" />
+              <div className="relative">
+                <img
+                  src="/estrella.svg"
+                  alt="Estrella"
+                  className="w-12 h-12 cursor-pointer"
+                  onClick={() => abrirComodin(1)}
+                />
+                <div className="absolute top-0 -right-1">
+                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
+                    {inventarioComodin1 ?? 0}
+                  </span>
+                </div>
+              </div>
+              <div className="relative">
+                <img
+                  src="/idea.svg"
+                  alt="Bombilla"
+                  className="w-12 h-12 cursor-pointer"
+                  onClick={() => abrirComodin(2)}
+                />
+                <div className="absolute top-0 -right-1">
+                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
+                    {inventarioComodin2 ?? 0}
+                  </span>
+                </div>
+              </div>
+              <div className="relative">
+                <img
+                  src="/estructura.svg"
+                  alt="Lapiz"
+                  className="w-12 h-12 cursor-pointer"
+                  onClick={() => abrirComodin(3)}
+                />
+                <div className="absolute top-0 -right-1">
+                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
+                    {inventarioComodin3 ?? 0}
+                  </span>
+                </div>
+              </div>
               <Link href="/lecturas">
                 <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
                   ←
@@ -152,6 +260,70 @@ const ModoPage = () => {
             </div>
           </div>
         </div>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>
+                  {comodinActivo?.tipoComodinId === 1
+                    ? "Resumen"
+                    : comodinActivo?.tipoComodinId === 2
+                    ? "Idea Principal"
+                    : "Palabras Clave"}
+                </ModalHeader>
+                <ModalBody>
+                  <p className="text-sm whitespace-pre-line">
+                    {comodinActivo?.tipoComodinId === 1
+                      ? comodinActivo?.resumenTexto
+                      : comodinActivo?.tipoComodinId === 2
+                      ? comodinActivo?.ideaPrincipal
+                      : comodinActivo?.palabrasClave.join(", ") ||
+                        "Contenido no disponible"}
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <Button onPress={onClose}>Cerrar</Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isOpen1} onOpenChange={onOpenChange1}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>¿Usar comodín?</ModalHeader>
+                <ModalBody>
+                  <p>
+                    ¿Estás seguro de que quieres usar este comodín? Solo podrás
+                    usarlo una vez.
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="danger"
+                    variant="light"
+                    onClick={() => {
+                      setComodinPendiente(null);
+                      onClose();
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      confirmarUso();
+                      onClose();
+                    }}
+                  >
+                    Sí, usar
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
       </div>
     );
   }
@@ -176,25 +348,12 @@ const ModoPage = () => {
             </h1>
           </div>
         </div>
-        {/* Iconos de comodines solo si el modo es aprendizaje */}
-        {modo === "aprendizaje" && pasoActual === 0 ? (
-          <div className="flex gap-8">
-            <img src="/estructura.svg" alt="Lapiz" className="w-12 h-12" />
-            <img src="/idea.svg" alt="Bombilla" className="w-12 h-12" />
-            <img src="/estrella.svg" alt="Estrella" className="w-12 h-12" />
-            <Link href="/lecturas">
-              <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
-                ←
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <Link href="/lecturas">
-            <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
-              ←
-            </Button>
-          </Link>
-        )}
+
+        <Link href="/lecturas">
+          <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+            ←
+          </Button>
+        </Link>
       </div>
 
       {/* Contenido debajo del header */}
