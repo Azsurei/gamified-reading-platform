@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Input } from "@heroui/react";
 import { Button } from "@heroui/react";
+import { Spinner } from "@heroui/spinner";  // Importa el spinner
 import Link from "next/link";
 
 const categories = [
@@ -18,16 +19,20 @@ const LearnPage = () => {
   const [lectures, setLectures] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [loading, setLoading] = useState(true); // Estado loading
 
   // Fetch de lecturas desde la API
   useEffect(() => {
     const fetchLectures = async () => {
+      setLoading(true);  // Empieza loading
       try {
         const res = await fetch("/api/lecturas");
         const data = await res.json();
         setLectures(data);
       } catch (error) {
         console.error("Error al obtener lecturas:", error);
+      } finally {
+        setLoading(false); // Termina loading siempre
       }
     };
 
@@ -45,7 +50,7 @@ const LearnPage = () => {
   };
 
   return (
-    <div className="w-full px-8 pb-12">
+    <div className="w-full px-8 pb-12 h-full">
       {/* Búsqueda */}
       <div className="w-full border-b border-gray-200 pb-4">
         <Input
@@ -75,9 +80,13 @@ const LearnPage = () => {
         </div>
       </div>
 
-      {/* Lista de lecturas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        {filterLectures(selectedCategory).length > 0 ? (
+      {/* Lista de lecturas o Loading */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 h-full">
+        {loading ? (
+          <div className="flex justify-center items-center w-full col-span-full">
+            <Spinner size="lg" /> {/* Spinner mientras carga */}
+          </div>
+        ) : filterLectures(selectedCategory).length > 0 ? (
           filterLectures(selectedCategory).map((lecture) => (
             <Link href={`/lecturas/${lecture.id}`} key={lecture.id}>
               <div className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20">

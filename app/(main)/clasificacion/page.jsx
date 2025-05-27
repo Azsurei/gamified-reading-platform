@@ -10,20 +10,25 @@ import {
   TableCell,
   Pagination,
 } from "@heroui/react";
+import { Spinner } from "@heroui/spinner"; // Importa spinner
 
 export default function ClasificationTable() {
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado loading
   const rowsPerPage = 8;
 
   useEffect(() => {
     async function fetchUsers() {
+      setLoading(true); // Inicia loading
       try {
         const res = await fetch("/api/clasificacion");
         const data = await res.json();
         setUsers(data);
       } catch (error) {
         console.error("Error fetching usuarios:", error);
+      } finally {
+        setLoading(false); // Termina loading
       }
     }
 
@@ -48,6 +53,7 @@ export default function ClasificationTable() {
     );
   };
 
+
   return (
     <div className="max-w-[1050px] mx-auto px-8">
       <div className="flex flex-col items-center mb-6 gap-4">
@@ -63,71 +69,76 @@ export default function ClasificationTable() {
           Se reinicia en 1 semana
         </p>
       </div>
+      {loading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <Table
+          aria-label="Tabla de clasificación con paginación"
+          hideHeader
+          removeWrapper
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="primary"
+                page={page}
+                total={pages}
+                onChange={setPage}
+              />
+            </div>
+          }
+          classNames={{
+            wrapper: "min-h-[222px]",
+          }}
+        >
+          <TableHeader>
+            <TableColumn className="text-sm">#</TableColumn>
+            <TableColumn className="text-sm">NOMBRE</TableColumn>
+            <TableColumn className="text-right text-sm">XP</TableColumn>
+          </TableHeader>
 
-      <Table
-        aria-label="Tabla de clasificación con paginación"
-        hideHeader
-        removeWrapper
-        bottomContent={
-          <div className="flex w-full justify-center">
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="primary"
-              page={page}
-              total={pages}
-              onChange={setPage}
-            />
-          </div>
-        }
-        classNames={{
-          wrapper: "min-h-[222px]",
-        }}
-      >
-        <TableHeader>
-          <TableColumn className="text-sm">#</TableColumn>
-          <TableColumn className="text-sm">NOMBRE</TableColumn>
-          <TableColumn className="text-right text-sm">XP</TableColumn>
-        </TableHeader>
-
-        <TableBody>
-          {users
-            .slice((page - 1) * rowsPerPage, page * rowsPerPage)
-            .map((item, index) => {
-              const rank = (page - 1) * rowsPerPage + index + 1;
-              return (
-                <TableRow
-                  key={item.id}
-                  className="hover:bg-gray-100 transition h-[64px]"
-                >
-                  <TableCell>{getMedal(rank)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      {item.imagen ? (
-                        <img
-                          src={item.imagen}
-                          alt={item.nombre}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-verde flex items-center justify-center text-sm font-semibold text-white">
-                          {item.iniciales}
-                        </div>
-                      )}
-                      <span className="text-sm lg:text-lg font-semibold text-negro">
-                        {item.nombre}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold text-sm lg:text-lg ">
-                    <span className="text-negro">{item.xp} XP</span>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
+          <TableBody>
+            {users
+              .slice((page - 1) * rowsPerPage, page * rowsPerPage)
+              .map((item, index) => {
+                const rank = (page - 1) * rowsPerPage + index + 1;
+                return (
+                  <TableRow
+                    key={item.id}
+                    className="hover:bg-gray-100 transition h-[64px]"
+                  >
+                    <TableCell>{getMedal(rank)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {item.imagen ? (
+                          <img
+                            src={item.imagen}
+                            alt={item.nombre}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-verde flex items-center justify-center text-sm font-semibold text-white">
+                            {item.iniciales}
+                          </div>
+                        )}
+                        <span className="text-sm lg:text-lg font-semibold text-negro">
+                          {item.nombre}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold text-sm lg:text-lg ">
+                      <span className="text-negro">{item.xp} XP</span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

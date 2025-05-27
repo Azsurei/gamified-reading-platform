@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
+  Spinner
 } from "@heroui/react";
 
 const comodines = [
@@ -40,6 +41,7 @@ const TiendaPage = () => {
   const [xpTotal, setXpTotal] = useState(null);
   const [comodinSeleccionado, setComodinSeleccionado] = useState(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState(true);
 
   const fetchXP = async () => {
     try {
@@ -50,6 +52,8 @@ const TiendaPage = () => {
     } catch (error) {
       console.error("Error al obtener XP:", error);
       setXpTotal(0);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -101,7 +105,13 @@ const TiendaPage = () => {
             Gasta tus puntos de experiencia en útiles comodines
           </p>
         </div>
-        <div className="bg-white border border-gris rounded-lg px-6 py-3 shadow-sm">
+        {loading? (
+            <div className="flex justify-center items-center h-[300px]">
+              <Spinner size="lg" />
+            </div>
+        ):(
+          <>
+          <div className="bg-white border border-gris rounded-lg px-6 py-3 shadow-sm">
           <p className="font-semibold text-negro text-sm lg:text-lg text-center">
             Puntos disponibles
           </p>
@@ -141,6 +151,8 @@ const TiendaPage = () => {
             </div>
           ))}
         </div>
+        </>
+        )}
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

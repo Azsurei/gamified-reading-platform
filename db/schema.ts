@@ -124,7 +124,9 @@ export const comodinLectura = pgTable("comodin_lectura", {
   }),
   resumenTexto: text("resumen_texto"),
   ideaPrincipal: text("idea_principal"),
-  palabrasClave: text("palabras_clave").array().default(sql`'{}'::text[]`), // Ej. palabras separadas por coma
+  palabrasClave: text("palabras_clave")
+    .array()
+    .default(sql`'{}'::text[]`), // Ej. palabras separadas por coma
 });
 
 export const comodinUsuario = pgTable("comodin_usuario", {
@@ -157,6 +159,20 @@ export const lecturaDesafioLog = pgTable("lectura_desafio_log", {
   fechaRegistrada: timestamp("fecha_registrada").defaultNow(),
 });
 
+export const comodinLecturaUsuario = pgTable("comodin_lectura_usuario", {
+  id: serial("id").primaryKey(),
+  usuarioId: varchar("usuario_id", { length: 255 })
+    .notNull()
+    .references(() => usuario.id),
+  lecturaId: integer("lectura_id")
+    .notNull()
+    .references(() => lectura.id),
+  tipoComodinId: integer("tipo_comodin_id")
+    .notNull()
+    .references(() => tipoComodin.id),
+  fechaUso: timestamp("fecha_uso").defaultNow(),
+});
+
 // RELATIONS
 
 export const usuarioRelations = relations(usuario, ({ many }) => ({
@@ -165,6 +181,7 @@ export const usuarioRelations = relations(usuario, ({ many }) => ({
   lecturasCompletadas: many(lecturaCompletada),
   comodinesUsuario: many(comodinUsuario),
   lecturaDesafioLog: many(lecturaDesafioLog),
+  comodinLecturaUsuario: many(comodinLecturaUsuario),
 }));
 
 export const lecturaRelations = relations(lectura, ({ many }) => ({
@@ -172,6 +189,7 @@ export const lecturaRelations = relations(lectura, ({ many }) => ({
   lecturasCompletadas: many(lecturaCompletada),
   comodinesLectura: many(comodinLectura),
   lecturaDesafioLog: many(lecturaDesafioLog),
+  comodinLecturaUsuario: many(comodinLecturaUsuario),
 }));
 
 export const desempenoRelations = relations(desempeno, ({ many }) => ({
@@ -241,6 +259,7 @@ export const progresoDesafioRelations = relations(
 export const tipoComodinRelations = relations(tipoComodin, ({ many }) => ({
   comodinesLectura: many(comodinLectura),
   comodinesUsuario: many(comodinUsuario),
+  comodinLecturaUsuario: many(comodinLecturaUsuario),
 }));
 
 export const comodinLecturaRelations = relations(comodinLectura, ({ one }) => ({
@@ -293,6 +312,24 @@ export const lecturaDesafioLogRelations = relations(
     lectura: one(lectura, {
       fields: [lecturaDesafioLog.lecturaId],
       references: [lectura.id],
+    }),
+  })
+);
+
+export const comodinLecturaUsuarioRelations = relations(
+  comodinLecturaUsuario,
+  ({ one }) => ({
+    usuario: one(usuario, {
+      fields: [comodinLecturaUsuario.usuarioId],
+      references: [usuario.id],
+    }),
+    lectura: one(lectura, {
+      fields: [comodinLecturaUsuario.lecturaId],
+      references: [lectura.id],
+    }),
+    tipoComodin: one(tipoComodin, {
+      fields: [comodinLecturaUsuario.tipoComodinId],
+      references: [tipoComodin.id],
     }),
   })
 );

@@ -10,12 +10,14 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Spinner,
 } from "@heroui/react";
 import { PreguntaSeleccion } from "@/components/pregunta-seleccion";
 import { PreguntaCompletar } from "@/components/pregunta-completar";
 import Retroalimentacion from "@/components/retroalimentacion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ResaltadorTexto } from "@/components/lectura-editor";
 
 const ModoPage = () => {
   const { modo, id } = useParams(); // Detecta si el modo es 'aprendizaje'
@@ -45,6 +47,7 @@ const ModoPage = () => {
   const [inventarioComodin3, setInventarioComodin3] = useState(null);
   const [comodinesUsados, setComodinesUsados] = useState([]);
   const [comodinPendiente, setComodinPendiente] = useState(null);
+  const [comodinesYaComprados, setComodinesYaComprados] = useState([]);
 
   useEffect(() => {
     const fetchLectura = async () => {
@@ -66,6 +69,8 @@ const ModoPage = () => {
             setInventarioComodin1(comodinesData.inventarioComodin1);
             setInventarioComodin2(comodinesData.inventarioComodin2);
             setInventarioComodin3(comodinesData.inventarioComodin3);
+            setComodinesYaComprados(comodinesData.comodinesComprados);
+            console.log("Comodines obtenidos:", comodinesData);
           } else {
             console.warn("No se pudieron obtener los comodines");
           }
@@ -114,6 +119,11 @@ const ModoPage = () => {
 
   const abrirComodin = (tipo) => {
     const encontrado = comodines.find((c) => c.tipoComodinId === tipo);
+    if (comodinesYaComprados.includes(tipo)) {
+      // ✅ si ya fue comprado, se omite el modal de compra)
+      setComodinActivo(encontrado);
+      onOpen();
+    }
 
     let disponible = false;
     if (tipo === 1 && inventarioComodin1 > 0) disponible = true;
@@ -134,15 +144,52 @@ const ModoPage = () => {
     }
   };
 
-  const confirmarUso = () => {
+  const confirmarUso = async () => {
     if (comodinPendiente !== null) {
+      // Optimismo UI: se actualiza la interfaz inmediatamente
       setComodinesUsados((prev) => [...prev, comodinPendiente]);
-      onOpen(); // abrir el modal real
+      onOpen();
       setComodinPendiente(null);
+
+      // Hacer el POST en segundo plano
+      try {
+        const res = await fetch("/api/comodin/usar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lecturaId: lectura.id,
+            tipoComodinId: comodinPendiente,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.error("Error al usar comodín:", data.error);
+          // Aquí podrías revertir el estado si es crítico
+          // o simplemente mostrar un toast de error
+        }
+      } catch (err) {
+        console.error("Error de red al usar comodín:", err);
+        // Igual: podrías notificar al usuario o intentar reintentar
+      }
     }
   };
 
-  if (loading || !lectura) return <p className="p-6">Cargando lectura...</p>;
+  const comodinObtenido = (tipoComodinId) => {
+    return (
+      comodinesYaComprados.includes(tipoComodinId) ||
+      comodinesUsados.includes(tipoComodinId)
+    );
+  };
+
+  if (loading || !lectura) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   if (mostrarRetroalimentacion) {
     console.log("Respuestas: ", respuestas);
@@ -179,45 +226,37 @@ const ModoPage = () => {
           {/* Iconos de comodines solo si el modo es aprendizaje */}
           {modo === "aprendizaje" && pasoActual === 0 ? (
             <div className="flex gap-8">
-              <div className="relative">
-                <img
-                  src="/estrella.svg"
-                  alt="Estrella"
-                  className="w-12 h-12 cursor-pointer"
-                  onClick={() => abrirComodin(1)}
-                />
-                <div className="absolute top-0 -right-1">
-                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
-                    {inventarioComodin1 ?? 0}
-                  </span>
-                </div>
-              </div>
-              <div className="relative">
-                <img
-                  src="/idea.svg"
-                  alt="Bombilla"
-                  className="w-12 h-12 cursor-pointer"
-                  onClick={() => abrirComodin(2)}
-                />
-                <div className="absolute top-0 -right-1">
-                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
-                    {inventarioComodin2 ?? 0}
-                  </span>
-                </div>
-              </div>
-              <div className="relative">
-                <img
-                  src="/estructura.svg"
-                  alt="Lapiz"
-                  className="w-12 h-12 cursor-pointer"
-                  onClick={() => abrirComodin(3)}
-                />
-                <div className="absolute top-0 -right-1">
-                  <span className="text-xs text-white bg-green-500 rounded-full px-1">
-                    {inventarioComodin3 ?? 0}
-                  </span>
-                </div>
-              </div>
+              {[1, 2, 3].map((id) => {
+                const icon =
+                  id === 1
+                    ? "/estrella.svg"
+                    : id === 2
+                    ? "/idea.svg"
+                    : "/estructura.svg";
+                const inventario =
+                  id === 1
+                    ? inventarioComodin1
+                    : id === 2
+                    ? inventarioComodin2
+                    : inventarioComodin3;
+
+                return (
+                  <div className="relative" key={id}>
+                    <img
+                      src={icon}
+                      alt={`Comodín ${id}`}
+                      className="w-12 h-12 cursor-pointer"
+                      onClick={() => abrirComodin(id)}
+                    />
+                    <div className="absolute top-0 -right-1">
+                      <span className="text-xs text-white bg-green-500 rounded-full px-1">
+                        {comodinObtenido(id) ? "✔" : inventario ?? 0}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+
               <Link href="/lecturas">
                 <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
                   ←
@@ -236,13 +275,12 @@ const ModoPage = () => {
         {/* Contenido debajo del header */}
         <div className="mt-24 flex-1">
           {/* Contenido */}
-          <div className="flex-1 px-6 py-4 lg:py-8 max-w-3xl mx-auto overflow-y-auto">
+          <div className="flex-1 px-6 py-4 lg:py-8 max-w-3xl mx-auto overflow-y-auto z-0">
             <h2 className="text-base lg:text-2xl font-normal text-negro text-center">
               {lectura.titulo}
             </h2>
-            <p className="text-xs lg:text-base leading-relaxed whitespace-pre-line font-normal text-justify py-6">
-              {lectura.contenido}
-            </p>
+            <ResaltadorTexto lectura={lectura} />
+
             {/* Botón de responder */}
             <div className="mx-auto flex justify-center">
               <Button
@@ -303,7 +341,7 @@ const ModoPage = () => {
                   <Button
                     color="danger"
                     variant="light"
-                    onClick={() => {
+                    onPress={() => {
                       setComodinPendiente(null);
                       onClose();
                     }}
@@ -312,7 +350,7 @@ const ModoPage = () => {
                   </Button>
                   <Button
                     color="primary"
-                    onClick={() => {
+                    onPress={() => {
                       confirmarUso();
                       onClose();
                     }}

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
-import { comodinLectura, comodinUsuario } from "@/db/schema"; // Asegúrate de tener este schema
-import { eq } from "drizzle-orm";
+import {
+  comodinLectura,
+  comodinUsuario,
+  comodinLecturaUsuario,
+} from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
@@ -20,17 +24,39 @@ export async function GET(
   }
 
   try {
-    const comodines = await db
-      .select()
-      .from(comodinLectura)
-      .where(eq(comodinLectura.lecturaId, lecturaId));
+    const [comodines, inventarioComodines, comodinesComprados] = await Promise.all(
+      [
+        db
+          .select()
+          .from(comodinLectura)
+          .where(eq(comodinLectura.lecturaId, lecturaId)),
 
-    const inventarioComodines = await db
-      .select()
-      .from(comodinUsuario)
-      .where(eq(comodinUsuario.usuarioId, userId));
+        db
+          .select()
+          .from(comodinUsuario)
+          .where(eq(comodinUsuario.usuarioId, userId)),
 
-    return NextResponse.json({ comodines, inventarioComodin1: inventarioComodines[0].cantidad, inventarioComodin2: inventarioComodines[1]?.cantidad, inventarioComodin3: inventarioComodines[2]?.cantidad });
+        db
+          .select({
+            comodinId: comodinLecturaUsuario.tipoComodinId,
+          })
+          .from(comodinLecturaUsuario)
+          .where(
+            and(
+              eq(comodinLecturaUsuario.usuarioId, userId),
+              eq(comodinLecturaUsuario.lecturaId, lecturaId)
+            )
+          ),
+      ]
+    );
+
+    return NextResponse.json({
+      comodines,
+      inventarioComodin1: inventarioComodines[0]?.cantidad ?? 0,
+      inventarioComodin2: inventarioComodines[1]?.cantidad ?? 0,
+      inventarioComodin3: inventarioComodines[2]?.cantidad ?? 0,
+      comodinesComprados: comodinesComprados.map((c) => c.comodinId),
+    });
   } catch (error) {
     console.error("Error al obtener los comodines:", error);
     return NextResponse.json(

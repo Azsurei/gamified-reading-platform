@@ -5,12 +5,13 @@ import dynamic from "next/dynamic";
 import BarChart from "@/components/bar-chart";
 import BarChart1 from "@/components/bar-chart2";
 import EvolucionChart from "@/components/evolution-chart";
+import { Spinner } from "@heroui/spinner"; // Importa spinner
 
 const RadarChart = dynamic(() => import("@/components/radar-chart"), {
   ssr: false,
 });
 
-const mockEvolucionLectura = [
+/* const mockEvolucionLectura = [
   {
     puntaje: 85,
     fecha: "2025-05-20",
@@ -148,7 +149,7 @@ const mockEvolucionLectura = [
   },
 
 ];
-
+ */
 
 const PerfilPage = () => {
   const [userData, setUserData] = useState(null);
@@ -212,7 +213,7 @@ const PerfilPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg text-gray-600">Cargando perfil...</p>
+        <Spinner size="lg" />
       </div>
     );
   }

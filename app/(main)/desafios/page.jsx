@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Progress } from "@heroui/react";
+import { Spinner } from "@heroui/spinner"; // Importa spinner
 
 const DesafiosPage = () => {
   const [desafios, setDesafios] = useState([]);
@@ -23,14 +24,6 @@ const DesafiosPage = () => {
     fetchDesafios();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="text-center mt-10 text-gray-600 font-medium">
-        Cargando desafíos...
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-[1050px] mx-auto px-8 pb-12">
       <div className="flex flex-col items-center mb-6 gap-4">
@@ -47,7 +40,12 @@ const DesafiosPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-10">
+      {loading? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spinner size="lg" />
+        </div>
+      ): (
+        <div className="flex flex-col gap-10">
         {desafios.map((desafio) => {
           const progreso =
             desafio.meta === 0
@@ -84,6 +82,7 @@ const DesafiosPage = () => {
           );
         })}
       </div>
+      )}
     </div>
   );
 };
