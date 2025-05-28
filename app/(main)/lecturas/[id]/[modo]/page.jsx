@@ -15,11 +15,12 @@ import {
 import { PreguntaSeleccion } from "@/components/pregunta-seleccion";
 import { PreguntaCompletar } from "@/components/pregunta-completar";
 import Retroalimentacion from "@/components/retroalimentacion";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { ResaltadorTexto } from "@/components/lectura-editor";
 
 const ModoPage = () => {
+  const router = useRouter();
   const { modo, id } = useParams(); // Detecta si el modo es 'aprendizaje'
   const [lectura, setLectura] = useState(null);
   const [preguntas, setPreguntas] = useState([]);
@@ -41,6 +42,11 @@ const ModoPage = () => {
     isOpen: isOpen1,
     onOpen: onOpen1,
     onOpenChange: onOpenChange1,
+  } = useDisclosure();
+  const {
+    isOpen: isOpen2,
+    onOpen: onOpen2,
+    onOpenChange: onOpenChange2,
   } = useDisclosure();
   const [inventarioComodin1, setInventarioComodin1] = useState(null);
   const [inventarioComodin2, setInventarioComodin2] = useState(null);
@@ -270,18 +276,20 @@ const ModoPage = () => {
                 );
               })}
 
-              <Link href="/lecturas">
-                <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
-                  ←
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <Link href="/lecturas">
-              <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
+              <Button
+                onPress={onOpen2}
+                className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
+              >
                 ←
               </Button>
-            </Link>
+            </div>
+          ) : (
+            <Button
+              onPress={onOpen2}
+              className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
+            >
+              ←
+            </Button>
           )}
         </div>
 
@@ -375,6 +383,34 @@ const ModoPage = () => {
             )}
           </ModalContent>
         </Modal>
+        <Modal isOpen={isOpen2} onOpenChange={onOpenChange2}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>¿Estás seguro?</ModalHeader>
+                <ModalBody>
+                  <p>
+                    Perderás tu progreso si regresas a la lista de lecturas.
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <Button variant="light" onPress={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    color="danger"
+                    onPress={() => {
+                      onClose();
+                      router.push("/lecturas");
+                    }}
+                  >
+                    Sí, regresar
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
       </div>
     );
   }
@@ -400,11 +436,12 @@ const ModoPage = () => {
           </div>
         </div>
 
-        <Link href="/lecturas">
-          <Button className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition">
-            ←
-          </Button>
-        </Link>
+        <Button
+          onPress={onOpen2}
+          className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
+        >
+          ←
+        </Button>
       </div>
 
       {/* Contenido debajo del header */}
@@ -461,6 +498,32 @@ const ModoPage = () => {
           )}
         </div>
       </div>
+      <Modal isOpen={isOpen2} onOpenChange={onOpenChange2}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>¿Estás seguro?</ModalHeader>
+              <ModalBody>
+                <p>Perderás tu progreso si regresas a la lista de lecturas.</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Cancelar
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    onClose();
+                    router.push("/lecturas");
+                  }}
+                >
+                  Sí, regresar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
