@@ -8,7 +8,7 @@ export const PreguntaCompletar = ({
   volverALectura,
   lecturaContenido,
   registrarPuntaje,
-  numeroReintento
+  numeroReintento,
 }) => {
   const [respuestaTexto, setRespuestaTexto] = useState("");
   const [verificado, setVerificado] = useState(false);
@@ -129,6 +129,7 @@ export const PreguntaCompletar = ({
         {!verificado && (
           <Button
             variant="ghost"
+            isDisabled={cargando}
             onPress={volverALectura}
             className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] text-gris border-gris hover:bg-grisClaro lg:w-[222px] lg:h-[52px]"
           >
@@ -137,6 +138,8 @@ export const PreguntaCompletar = ({
         )}
         <Button
           onPress={verificado ? onContinuar : handleVerificar}
+          isLoading={cargando}
+          isDisabled={!verificado && !respuestaTexto.trim()}
           className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] text-white bg-verde hover:bg-verdeClaro"
         >
           {verificado ? "Continuar" : "Verificar"}

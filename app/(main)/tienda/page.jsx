@@ -9,7 +9,9 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
-  Spinner
+  Spinner,
+  addToast,
+  cn,
 } from "@heroui/react";
 
 const comodines = [
@@ -53,7 +55,7 @@ const TiendaPage = () => {
       console.error("Error al obtener XP:", error);
       setXpTotal(0);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -105,53 +107,53 @@ const TiendaPage = () => {
             Gasta tus puntos de experiencia en útiles comodines
           </p>
         </div>
-        {loading? (
-            <div className="flex justify-center items-center h-[300px]">
-              <Spinner size="lg" />
-            </div>
-        ):(
+        {loading ? (
+          <div className="flex justify-center items-center h-[300px]">
+            <Spinner size="lg" />
+          </div>
+        ) : (
           <>
-          <div className="bg-white border border-gris rounded-lg px-6 py-3 shadow-sm">
-          <p className="font-semibold text-negro text-sm lg:text-lg text-center">
-            Puntos disponibles
-          </p>
-          <p className="text-center font-bold text-sm lg:text-lg text-negro">
-            {xpTotal !== null ? `${xpTotal} XP` : "Cargando..."}
-          </p>
-        </div>
-        <div className="flex flex-col gap-12 w-full">
-          {comodines.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between items-center border border-gris rounded-lg p-4 shadow-sm gap-4"
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={item.icono}
-                  alt={item.titulo}
-                  className="w-[40px] h-[40px] object-contain"
-                />
-                <div>
-                  <p className="font-semibold text-negro text-sm lg:text-lg">
-                    {item.titulo}
-                  </p>
-                  <p className="text-xs lg:text-sm text-gray-600">
-                    {item.descripcion}
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold"
-                onPress={() => handleComprar(item)}
-                isDisabled={xpTotal !== null && xpTotal < item.costo}
-              >
-                {item.costo} XP
-              </Button>
+            <div className="bg-white border border-gris rounded-lg px-6 py-3 shadow-sm">
+              <p className="font-semibold text-negro text-sm lg:text-lg text-center">
+                Puntos disponibles
+              </p>
+              <p className="text-center font-bold text-sm lg:text-lg text-negro">
+                {xpTotal !== null ? `${xpTotal} XP` : "Cargando..."}
+              </p>
             </div>
-          ))}
-        </div>
-        </>
+            <div className="flex flex-col gap-12 w-full">
+              {comodines.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center border border-gris rounded-lg p-4 shadow-sm gap-4"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={item.icono}
+                      alt={item.titulo}
+                      className="w-[40px] h-[40px] object-contain"
+                    />
+                    <div>
+                      <p className="font-semibold text-negro text-sm lg:text-lg">
+                        {item.titulo}
+                      </p>
+                      <p className="text-xs lg:text-sm text-gray-600">
+                        {item.descripcion}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="lg"
+                    className="bg-verde hover:bg-verdeClaro text-white font-semibold"
+                    onPress={() => handleComprar(item)}
+                    isDisabled={xpTotal !== null && xpTotal < item.costo}
+                  >
+                    {item.costo} XP
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -176,6 +178,20 @@ const TiendaPage = () => {
                 <Button
                   color="primary"
                   onPress={async () => {
+                    addToast({
+                      title: "Compra exitosa",
+                      hideIcon: true,
+                      timeout: 2000,
+                      shouldShowTimeoutProgress: true,
+                      variant: "solid",
+                      radius: "md",
+                      classNames: {
+                        base: cn([
+                          "bg-verdeClaro",
+                        ]),
+                        title: "text-white font-semibold",
+                      },
+                    });
                     await confirmarCompra();
                     onClose();
                   }}

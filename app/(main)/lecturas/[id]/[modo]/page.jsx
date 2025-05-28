@@ -50,6 +50,19 @@ const ModoPage = () => {
   const [comodinesYaComprados, setComodinesYaComprados] = useState([]);
 
   useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = ""; // Necesario para que algunos navegadores muestren el mensaje por defecto
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchLectura = async () => {
       try {
         const res = await fetch(`/api/lecturas/${id}`);
@@ -289,7 +302,7 @@ const ModoPage = () => {
                     ? volverAPreguntaPendiente
                     : avanzarPaso
                 }
-                className={`font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] transition text-white bg-verde hover:bg-verdeClar`}
+                className={`font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] transition text-white bg-verde hover:bg-verdeClaro`}
               >
                 {pasoAntesDeLectura !== null
                   ? "Volver a la pregunta"

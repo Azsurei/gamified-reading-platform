@@ -45,9 +45,10 @@ export default function Retroalimentacion({
   lecturaId,
   lecturaCategoria,
   puntajeMaximo,
-  numeroReintento
+  numeroReintento,
 }) {
   const router = useRouter();
+  const [cargando, setCargando] = useState(false);
 
   // Construimos filas dinámicamente desde puntajes
   const rows = Object.entries(desempenosTextos).map(([id, texto]) => {
@@ -107,20 +108,25 @@ export default function Retroalimentacion({
       : `¡Increíble! Ganaste ${incrementoXP} puntos de experiencia adicionales por mejorar tu puntaje y todos los desempeños están en excelente nivel.`;
 
   async function finalizarLectura() {
+    setCargando(true);
     try {
       // 1. Guardar respuestas
       console.log("Respuestas a guardar:", respuestas);
       await fetch("/api/respuestas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({respuestas}),
+        body: JSON.stringify({ respuestas }),
       });
 
       // 2. Registrar lectura completada
       await fetch("/api/lectura-completada", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lecturaId, xpGanado: XP_OBTENIDA, numeroReintento }),
+        body: JSON.stringify({
+          lecturaId,
+          xpGanado: XP_OBTENIDA,
+          numeroReintento,
+        }),
       });
 
       // 3. Actualizar XP del usuario solo si hay incremento
@@ -175,6 +181,8 @@ export default function Retroalimentacion({
       router.push("/lecturas");
     } catch (error) {
       console.error("Error al finalizar la lectura:", error);
+    } finally {
+      setCargando(false);
     }
   }
 
@@ -227,6 +235,7 @@ export default function Retroalimentacion({
         <Button
           className="mt-6 bg-verde text-white w-[222px] h-[52px] text-sm lg:text-lg "
           onPress={finalizarLectura}
+          isLoading={cargando}
         >
           Finalizar
         </Button>

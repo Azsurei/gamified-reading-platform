@@ -25,7 +25,8 @@ export const PreguntaSeleccion = ({
   const handleVerificar = () => {
     if (!respuestaSeleccionada) return;
 
-    const correcta = respuestaSeleccionada.alternativaId === pregunta.respuestaCorrecta;
+    const correcta =
+      respuestaSeleccionada.alternativaId === pregunta.respuestaCorrecta;
     setEsCorrecta(correcta);
     setVerificado(true);
 
@@ -103,6 +104,7 @@ export const PreguntaSeleccion = ({
         )}
         <Button
           onPress={verificado ? onContinuar : handleVerificar}
+          isDisabled={!verificado && !respuestaSeleccionada}
           className="font-semibold px-6 py-3 rounded-lg text-xs lg:text-lg w-[150px] h-[44px] lg:w-[222px] lg:h-[52px] text-white bg-verde hover:bg-verdeClaro"
         >
           {verificado ? "Continuar" : "Verificar"}

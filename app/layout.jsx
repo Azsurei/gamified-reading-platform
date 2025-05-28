@@ -1,5 +1,8 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import Providers from "@/components/providers";
+
+// import dynamic from "next/dynamic";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,7 +14,7 @@ export default function RootLayout({ children }) {
     <ClerkProvider afterSignOutUrl="/">
       <html lang="es" className="h-full">
         <body suppressHydrationWarning={true}>
-          {children}
+          <Providers>{children}</Providers>
         </body>
       </html>
     </ClerkProvider>
