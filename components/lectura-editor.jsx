@@ -23,25 +23,32 @@ export function ResaltadorTexto({ lectura }) {
 function ContenidoResaltable({ htmlSeguro, storageKey }) {
   const { selections, setSelections } = useSelections();
 
-  // 1. Cargar selecciones desde localStorage SOLO si están vacías
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (selections.length === 0 && saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setSelections(parsed); // ✅ Solo cargamos si hay algo válido
-        }
-      } catch (e) {
-        console.error("Error al cargar las selecciones guardadas:", e);
-      }
-    }
-  }, [storageKey, setSelections, selections.length]);
+  // ✅ Flag para evitar múltiples cargas desde localStorage
+  const hasLoadedRef = React.useRef(false);
 
-  // 2. Guardar selecciones en localStorage cuando cambien
   useEffect(() => {
+    if (!hasLoadedRef.current) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setSelections(parsed);
+          }
+        } catch (e) {
+          console.error("Error al cargar las selecciones guardadas:", e);
+        }
+      }
+      hasLoadedRef.current = true; // ✅ Marcar como ya cargado
+    }
+  }, [storageKey, setSelections]);
+
+  useEffect(() => {
+    console.log("Guardando selecciones:", selections);
     if (selections.length > 0) {
       localStorage.setItem(storageKey, JSON.stringify(selections));
+    } else {
+      localStorage.removeItem(storageKey);
     }
   }, [selections, storageKey]);
 
