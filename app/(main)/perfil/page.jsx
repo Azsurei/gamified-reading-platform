@@ -287,20 +287,27 @@ const PerfilPage = () => {
         {/* Gráficos (encabezado) */}
         <div className="w-full flex flex-col gap-4">
           <h2 className="text-xl font-semibold">Gráficos</h2>
-
-          {/* Radar Chart */}
-          <div className="w-full bg-white p-4 border rounded-xl">
-            <RadarChart data={userData.desempeno} />
-          </div>
-          <div className="w-full bg-white p-4 border rounded-xl">
-            <BarChart data={userData.categoriasLeidas} />
-          </div>
-          <div className="w-full bg-white p-4 border rounded-xl">
-            <BarChart1 data={userData.promedioPorCategoria} />
-          </div>
-          <div className="w-full bg-white p-4 border rounded-xl">
-            <EvolucionChart data={userData.evolucionLectura} />
-          </div>
+          {userData.desempeno && userData.desempeno.length > 0 ? (
+            <>
+              {/* Radar Chart */}
+              <div className="w-full bg-white p-4 border rounded-xl">
+                <RadarChart data={userData.desempeno} />
+              </div>
+              <div className="w-full bg-white p-4 border rounded-xl">
+                <BarChart data={userData.categoriasLeidas} />
+              </div>
+              <div className="w-full bg-white p-4 border rounded-xl">
+                <BarChart1 data={userData.promedioPorCategoria} />
+              </div>
+              <div className="w-full bg-white p-4 border rounded-xl">
+                <EvolucionChart data={userData.evolucionLectura} />
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-500 italic">
+              Lee una lectura para ver tu progreso.
+            </p>
+          )}
         </div>
       </div>
     </div>

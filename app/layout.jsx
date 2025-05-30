@@ -1,7 +1,7 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "@/components/providers";
-
+import { esMX } from '@clerk/localizations'
 // import dynamic from "next/dynamic";
 
 export const metadata = {
@@ -11,7 +11,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider afterSignOutUrl="/">
+    <ClerkProvider
+      afterSignOutUrl="/"
+      localization={esMX}
+    >
       <html lang="es" className="h-full">
         <body suppressHydrationWarning={true}>
           <Providers>{children}</Providers>
