@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 import Racoon from "@/public/racoon.json";
+import { useState } from "react";
 
 // Mapeo fijo de desempeños
 const desempenosTextos = {
