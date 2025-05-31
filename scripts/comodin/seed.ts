@@ -26,8 +26,8 @@ async function seed() {
       imagen: "/idea.svg",
     },
     {
-      nombre: "Resaltar palabras claves destacadas",
-      descripcion: "Resalta palabras clave importantes en el texto.",
+      nombre: "Mostrar palabras claves destacadas",
+      descripcion: "Muestra palabras clave importantes en el texto.",
       costoXp: 15,
       imagen: "/estructura.svg",
     },

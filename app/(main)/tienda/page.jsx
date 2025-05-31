@@ -32,8 +32,8 @@ const comodines = [
   },
   {
     id: 3,
-    titulo: "Resaltar palabras claves destacadas",
-    descripcion: "Resalta palabras clave importantes en el texto.",
+    titulo: "Mostrar palabras claves destacadas",
+    descripcion: "Muestra palabras clave importantes en el texto.",
     icono: "/estructura.svg",
     costo: 15,
   },

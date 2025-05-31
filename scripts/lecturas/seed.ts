@@ -2,7 +2,6 @@ import "dotenv/config";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "@/db/schema"; // Ajusta la ruta a tu archivo de schemas
-import { eq } from "drizzle-orm";
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema: { schema } });
