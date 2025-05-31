@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 const categories = [
   { id: "all", label: "Todas" },
-  { id: "Literatura Clásica", label: "Literatura clásica" },
+  { id: "Literatura clásica", label: "Literatura clásica" },
   { id: "Historia", label: "Historia" },
   { id: "Ciencia", label: "Ciencia" },
   { id: "Entretenimiento", label: "Entretenimiento" },
