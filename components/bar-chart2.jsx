@@ -23,7 +23,7 @@ const BarChartPromedioPorCategoria = ({ data }) => {
     },
     tooltip: {
       formatter: function () {
-        return `<b>${this.y}%</b> de efectividad en <b>${this.x}</b>`;
+        return `<b>${this.y}%</b> de efectividad`;
       },
     },
     legend: {

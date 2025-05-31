@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Input } from "@heroui/react";
 import { Button } from "@heroui/react";
-import { Spinner } from "@heroui/spinner";  // Importa el spinner
+import { Spinner } from "@heroui/spinner"; // Importa el spinner
 import Link from "next/link";
 
 const categories = [
@@ -24,7 +24,7 @@ const LearnPage = () => {
   // Fetch de lecturas desde la API
   useEffect(() => {
     const fetchLectures = async () => {
-      setLoading(true);  // Empieza loading
+      setLoading(true); // Empieza loading
       try {
         const res = await fetch("/api/lecturas");
         const data = await res.json();
@@ -88,8 +88,8 @@ const LearnPage = () => {
           </div>
         ) : filterLectures(selectedCategory).length > 0 ? (
           filterLectures(selectedCategory).map((lecture) => (
-            <Link href={`/lecturas/${lecture.id}`} key={lecture.id}>
-              <div className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20">
+            <div className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20">
+              <Link href={`/lecturas/${lecture.id}`} key={lecture.id}>
                 <img
                   src={lecture.imagen}
                   alt={lecture.titulo}
@@ -103,8 +103,8 @@ const LearnPage = () => {
                     {lecture.descripcion}
                   </p>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           ))
         ) : (
           <p className="text-gray-500 mt-4">No se encontraron lecturas.</p>
