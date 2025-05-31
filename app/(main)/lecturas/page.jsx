@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { Spinner } from "@heroui/spinner"; // Importa el spinner
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const categories = [
   { id: "all", label: "Todas" },
@@ -20,6 +20,10 @@ const LearnPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true); // Estado loading
+  const router = useRouter();
+  const irALectura = () => {
+    router.push(`/lecturas/${lecture.id}`);
+  };
 
   // Fetch de lecturas desde la API
   useEffect(() => {
@@ -88,22 +92,23 @@ const LearnPage = () => {
           </div>
         ) : filterLectures(selectedCategory).length > 0 ? (
           filterLectures(selectedCategory).map((lecture) => (
-            <div className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20">
-              <Link href={`/lecturas/${lecture.id}`} key={lecture.id}>
-                <img
-                  src={lecture.imagen}
-                  alt={lecture.titulo}
-                  className="w-[96px] h-[96px] rounded-lg object-cover"
-                />
-                <div>
-                  <h3 className="text-lg font-semibold text-negro">
-                    {lecture.titulo}
-                  </h3>
-                  <p className="text-sm text-gray-600 text-justify">
-                    {lecture.descripcion}
-                  </p>
-                </div>
-              </Link>
+            <div
+              onClick={irALectura}
+              className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20"
+            >
+              <img
+                src={lecture.imagen}
+                alt={lecture.titulo}
+                className="w-[96px] h-[96px] rounded-lg object-cover"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-negro">
+                  {lecture.titulo}
+                </h3>
+                <p className="text-sm text-gray-600 text-justify">
+                  {lecture.descripcion}
+                </p>
+              </div>
             </div>
           ))
         ) : (
