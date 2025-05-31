@@ -21,8 +21,8 @@ const LearnPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true); // Estado loading
   const router = useRouter();
-  const irALectura = () => {
-    router.push(`/lecturas/${lecture.id}`);
+  const irALectura = (lectura) => {
+    router.push(`/lecturas/${lectura.id}`);
   };
 
   // Fetch de lecturas desde la API
@@ -93,8 +93,9 @@ const LearnPage = () => {
         ) : filterLectures(selectedCategory).length > 0 ? (
           filterLectures(selectedCategory).map((lecture) => (
             <div
-              onClick={irALectura}
-              className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20"
+              onClick={() => irALectura(lecture)}
+              className="flex items-center gap-4 p-4 rounded-xl border border-gris hover:shadow-sm transition cursor-pointer hover:bg-secondary/20 h-[130px]"
+              key={lecture.id}
             >
               <img
                 src={lecture.imagen}
