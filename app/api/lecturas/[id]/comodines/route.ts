@@ -24,8 +24,8 @@ export async function GET(
   }
 
   try {
-    const [comodines, inventarioComodines, comodinesComprados] = await Promise.all(
-      [
+    const [comodines, inventarioComodines, comodinesComprados] =
+      await Promise.all([
         db
           .select()
           .from(comodinLectura)
@@ -47,14 +47,17 @@ export async function GET(
               eq(comodinLecturaUsuario.lecturaId, lecturaId)
             )
           ),
-      ]
-    );
+      ]);
+
+    const cantidadPorTipo = (tipoId: number) =>
+      inventarioComodines.find((c) => c.tipoComodinId === tipoId)?.cantidad ??
+      0;
 
     return NextResponse.json({
       comodines,
-      inventarioComodin1: inventarioComodines[0]?.cantidad ?? 0,
-      inventarioComodin2: inventarioComodines[1]?.cantidad ?? 0,
-      inventarioComodin3: inventarioComodines[2]?.cantidad ?? 0,
+      inventarioComodin1: cantidadPorTipo(1),
+      inventarioComodin2: cantidadPorTipo(2),
+      inventarioComodin3: cantidadPorTipo(3),
       comodinesComprados: comodinesComprados.map((c) => c.comodinId),
     });
   } catch (error) {

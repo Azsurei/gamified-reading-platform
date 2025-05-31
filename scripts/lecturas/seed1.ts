@@ -15,7 +15,7 @@ async function seed() {
       descripcion:
         "Texto sobre el mito de Ariadna y su relevancia en la literatura.",
       imagen: "/ariadna.svg",
-      categoria: "Literatura Clásica",
+      categoria: "Literatura clásica",
       tipoTexto: "narrativo",
       contenido: `En los tiempos antiguos, cuando los dioses aún intervenían en los asuntos humanos, Creta era una potencia insular gobernada por el rey Minos. Según los relatos, este soberano había recibido como ofrenda divina un magnífico toro blanco, símbolo de poder y legitimidad. Sin embargo, al desobedecer las órdenes del dios Poseidón y no sacrificar al animal, Minos desató la ira divina. Como castigo, su esposa Pasífae fue embrujada para enamorarse del toro, y de esa unión antinatural nació una criatura aterradora: el Minotauro, mitad hombre y mitad bestia.
 

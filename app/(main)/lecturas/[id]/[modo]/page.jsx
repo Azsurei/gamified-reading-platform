@@ -84,6 +84,7 @@ const ModoPage = () => {
           const comodinesRes = await fetch(`/api/lecturas/${id}/comodines`);
           if (comodinesRes.ok) {
             const comodinesData = await comodinesRes.json();
+            console.log("Comodines data:", comodinesData);
             setComodines(comodinesData.comodines);
             setInventarioComodin1(comodinesData.inventarioComodin1);
             setInventarioComodin2(comodinesData.inventarioComodin2);

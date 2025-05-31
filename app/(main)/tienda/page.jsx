@@ -64,6 +64,7 @@ const TiendaPage = () => {
   }, []);
 
   const handleComprar = (comodin) => {
+    console.log("Comprar comodín:", comodin);
     setComodinSeleccionado(comodin);
     onOpen();
   };
