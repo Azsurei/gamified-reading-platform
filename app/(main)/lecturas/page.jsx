@@ -85,7 +85,7 @@ const LearnPage = () => {
       </div>
 
       {/* Lista de lecturas o Loading */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {loading ? (
           <div className="flex justify-center items-center w-full col-span-full">
             <Spinner size="lg" /> {/* Spinner mientras carga */}

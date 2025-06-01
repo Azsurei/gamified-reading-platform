@@ -7,7 +7,6 @@ const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema: { schema } });
 
 async function seed() {
-  
   const [lecturaSeleccionada] = await db
     .insert(schema.lectura)
     .values({
@@ -165,7 +164,7 @@ Incluso en la actualidad, hablar del "hilo de Ariadna" es una forma de referirse
       lecturaId,
       desempenoId: 3,
       enunciado:
-        "¿Qué relación existe entre la presencia de antiguos cauces de ríos en Marte y la posibilidad de vida en el pasado?",
+        "¿Qué relación de causa y efecto se puede deducir entre las decisiones del rey Minos y la creación del laberinto?",
       tipo: "seleccion",
       tipoCorreccion: "objetivo",
       nivelDificultad: "Media",
@@ -196,7 +195,7 @@ Incluso en la actualidad, hablar del "hilo de Ariadna" es una forma de referirse
       lecturaId,
       desempenoId: 3,
       enunciado:
-        "¿Qué comparación implícita se establece en el texto entre Marte y la Tierra?",
+        "¿Qué relación de semejanza o diferencia se puede establecer entre el hilo de Ariadna y el laberinto?",
       tipo: "seleccion",
       tipoCorreccion: "objetivo",
       nivelDificultad: "Media",
