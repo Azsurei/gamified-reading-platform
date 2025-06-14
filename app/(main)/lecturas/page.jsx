@@ -103,10 +103,10 @@ const LearnPage = () => {
                 className="w-[96px] h-[96px] rounded-lg object-cover"
               />
               <div>
-                <h3 className="text-lg font-semibold text-negro">
+                <h3 className="text-sm xl:text-medium 2xl:text-lg font-semibold text-negro">
                   {lecture.titulo}
                 </h3>
-                <p className="text-sm text-gray-600 text-justify">
+                <p className="text-[10px] xl:text-xs 2xl:text-sm text-gray-600 text-justify">
                   {lecture.descripcion}
                 </p>
               </div>

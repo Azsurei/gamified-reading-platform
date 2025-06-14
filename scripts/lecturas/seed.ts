@@ -1,13 +1,14 @@
 import "dotenv/config";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
 import * as schema from "@/db/schema"; // Ajusta la ruta a tu archivo de schemas
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema: { schema } });
 
 async function seed() {
-  // 1. Borra todas las lecturas para evitar duplicados
+/*   // 1. Borra todas las lecturas para evitar duplicados
   await db.delete(schema.lectura);
 
   // 2. Inserta nueva lectura
@@ -26,17 +27,21 @@ Además del pasado, el interés también está puesto en el futuro. Distintas ag
 También se discuten otras posibilidades: mientras algunos expertos consideran que establecer una colonia en Marte ayudaría a garantizar el futuro de la humanidad en caso de una catástrofe en la Tierra, otros opinan que los recursos deberían centrarse en resolver los problemas actuales de nuestro planeta. Estas posiciones reflejan distintas formas de pensar sobre el rol de la ciencia, la exploración y la responsabilidad ambiental.
 
 La conversación sobre Marte continúa evolucionando a medida que se obtienen nuevos datos y se desarrollan tecnologías más avanzadas. Por ahora, Marte sigue siendo un territorio de misterio y posibilidades, donde la ciencia intenta responder preguntas fundamentales sobre la vida, el universo y nuestro lugar en él.`,
-  });
-  /* await db
+  }); */
+  await db
     .update(schema.lectura)
     .set({
-      contenido: `Un agujero negro es un objeto astronómico con una gravedad tan intensa que nada puede escapar de su interior, ni siquiera la luz. Se forma cuando una estrella muy masiva agota su energía y colapsa sobre sí misma, concentrando toda su masa en un punto extremadamente denso llamado singularidad. Alrededor de este punto se encuentra una región invisible, lo que conocemos como agujero negro. No podemos observarlo directamente porque ni la luz puede salir de él, pero los científicos pueden inferir su presencia observando el comportamiento de la materia y la luz en su entorno, como estrellas que giran de forma extraña o gases que se calientan al acercarse.
+      contenido: `El cambio climático ya no es una predicción futura: es una realidad observable. Aumentos en la temperatura global, derretimiento de glaciares, olas de calor más frecuentes y fenómenos meteorológicos extremos son señales claras de un planeta que está cambiando. Aunque algunos todavía dudan de su gravedad o sus causas, la ciencia ha demostrado con evidencia contundente que este fenómeno está relacionado directamente con la actividad humana, especialmente con la emisión de gases de efecto invernadero.
 
-Uno de los conceptos más fascinantes y desafiantes al estudiar los agujeros negros es el llamado horizonte de eventos. Esta es la “frontera” que marca el punto sin retorno: una vez que algo lo cruza, ya no hay manera de volver atrás. Se le llama así porque más allá de ese límite ya no es posible recibir información o eventos desde dentro del agujero negro. No se trata de una barrera física, sino de un límite matemático definido por la velocidad de escape: para poder salir, un objeto tendría que moverse más rápido que la luz, lo cual, según la teoría de la relatividad de Einstein, es imposible. Por eso, el horizonte de eventos es una línea invisible, pero crítica, en la estructura del universo.
+Desde el siglo XIX, la quema de combustibles fósiles como el petróleo, el gas y el carbón ha liberado grandes cantidades de dióxido de carbono (CO₂) y otros gases que atrapan el calor en la atmósfera. Este efecto, conocido como “efecto invernadero”, es natural y necesario para la vida, pero en exceso está provocando un calentamiento acelerado. Según la NASA y el Panel Intergubernamental sobre Cambio Climático (IPCC), si no se toman medidas urgentes, podríamos enfrentar consecuencias irreversibles: aumento del nivel del mar, desaparición de especies, migraciones masivas y crisis alimentarias.
 
-El estudio del horizonte de eventos ha llevado a grandes debates entre los científicos, especialmente cuando se mezcla con la mecánica cuántica. Uno de los más conocidos es la llamada paradoja de la información: si todo lo que entra en un agujero negro desaparece, ¿qué sucede con la información que contenía? ¿Se destruye para siempre? Esto desafía las leyes de la física, que afirman que la información no puede perderse. Además, los físicos han descubierto que cuando la materia se acerca al horizonte de eventos, experimenta fenómenos extremos: el tiempo se desacelera desde el punto de vista de un observador externo, y la materia puede alcanzar temperaturas muy altas. Todo esto hace que el horizonte de eventos no solo sea una frontera física, sino también una frontera del conocimiento humano, donde las leyes conocidas de la ciencia comienzan a encontrarse con sus propios límites.`,
+Algunos argumentan que los cambios climáticos han ocurrido siempre en la historia de la Tierra. Esto es cierto, pero la diferencia está en la velocidad y origen del cambio actual. Nunca antes en la historia reciente se había producido un aumento tan rápido de la temperatura global, y nunca antes había estado tan claramente vinculado a nuestras decisiones económicas, tecnológicas y de consumo.
+
+Otros sostienen que cambiar el modelo actual de producción es costoso o inviable. Sin embargo, numerosos estudios muestran que las consecuencias de no actuar serían mucho más caras a largo plazo. Invertir en energías limpias, transporte sostenible y políticas de reducción de emisiones no solo ayudaría al planeta, sino que también generaría empleo, innovación y mejor calidad de vida.
+
+Frente a esta evidencia, el argumento científico es claro: el cambio climático es real, es causado por el ser humano, y podemos (y debemos) actuar para frenarlo. Ignorar este problema no lo hará desaparecer; enfrentarlo con información, compromiso y responsabilidad puede marcar la diferencia.`,
     })
-    .where(eq(schema.lectura.id, 1)); */
+    .where(eq(schema.lectura.id, 7));
   console.log("✅ Seed ejecutado correctamente");
 }
 

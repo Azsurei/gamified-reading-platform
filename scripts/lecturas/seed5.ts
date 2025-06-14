@@ -12,7 +12,7 @@ async function seed() {
     .values({
       titulo: "El cambio climático: una urgencia científica y humana",
       descripcion:
-        "Este texto aborda el cambio climático desde un enfoque científico, explicando sus causas, consecuencias y la responsabilidad humana en su aceleración. A través de evidencias y razonamientos, defiende la urgencia de actuar para mitigar sus efectos y propone soluciones basadas en ciencia y sostenibilidad.",
+        "Este texto aborda el cambio climático desde un enfoque científico, explicando sus causas, consecuencias y la responsabilidad humana en su aceleración.",
       imagen: "/clima.svg",
       categoria: "Ciencia",
       tipoTexto: "argumentativo",

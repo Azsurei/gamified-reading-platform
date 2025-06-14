@@ -13,7 +13,7 @@ async function seed() {
       titulo:
         "¿Es justo el destino de Edipo? Una mirada crítica a la tragedia griega",
       descripcion:
-        "Este texto analiza la tragedia griega Edipo Rey, cuestionando si el castigo que sufre el protagonista es justo. A través de argumentos basados en su desconocimiento, sus buenas intenciones y su sentido de justicia, se plantea que Edipo es una víctima del destino más que un culpable. El texto invita a reflexionar sobre la responsabilidad, la culpa y la ética en la literatura clásica.",
+        "Este texto analiza la tragedia griega Edipo Rey, cuestionando si el castigo que sufre el protagonista es justo.",
       imagen: "/edipo.svg",
       categoria: "Literatura clásica",
       tipoTexto: "argumentativo",

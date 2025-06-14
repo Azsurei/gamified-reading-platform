@@ -13,7 +13,7 @@ async function seed() {
       titulo:
         "El poder de la música: una forma de arte que conecta con los jóvenes",
       descripcion:
-        "Este texto reflexiona sobre el valor de la música como una forma de arte significativa en la vida de los adolescentes. Expone cómo influye en sus emociones, identidad y pensamiento crítico, y argumenta que la música va más allá del entretenimiento al convertirse en un medio de expresión, conexión y crecimiento personal.",
+        "Este texto reflexiona sobre el valor de la música como una forma de arte significativa en la vida de los adolescentes.",
       imagen: "/musica.svg",
       categoria: "Arte",
       tipoTexto: "expositivo",
