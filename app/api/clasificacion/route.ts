@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
-import { usuario } from "@/db/schema"; // Ajusta si tu path real difiere
+import { usuario } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
 export async function GET() {

@@ -39,7 +39,7 @@ Evalúa si la respuesta del estudiante es correcta. Devuelve un objeto JSON con 
 - retroalimentacion: string (proporciona una breve explicación o retroalimentación de la respuesta del estudiante).
 
 Solo devuelve el objeto JSON, sin ningún texto adicional.
-Ejemplo de formato:
+Ejemplo de formato (trata de dar la retroalimentación con un tono amigable):
 {
   "esCorrecta": true,
   "retroalimentacion": "La respuesta es correcta porque..."
@@ -56,7 +56,7 @@ Devuelve un objeto JSON con los campos:
 - retroalimentacion: string
 
 Solo devuelve el objeto JSON, sin ningún texto adicional.
-Ejemplo de formato:
+Ejemplo de formato (trata de dar la retroalimentación con un tono amigable):
 {
   "nivel": "medio",
   "retroalimentacion": "La respuesta tiene algunos puntos buenos pero le falta detalle."

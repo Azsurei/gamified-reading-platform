@@ -2,7 +2,16 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import { db } from "@/db/drizzle";
-import { usuario, desafio, progresoDesafio, respuesta, lecturaCompletada, comodinUsuario, lecturaDesafioLog, comodinLecturaUsuario} from "@/db/schema";
+import {
+  usuario,
+  desafio,
+  progresoDesafio,
+  respuesta,
+  lecturaCompletada,
+  comodinUsuario,
+  lecturaDesafioLog,
+  comodinLecturaUsuario,
+} from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
@@ -20,7 +29,9 @@ export async function POST(req: NextRequest) {
 
       const nuevoUsuario = {
         id: user.id,
-        nombre: `${user.first_name} ${user.last_name}`.trim(),
+        nombre:
+          user.username?.trim() ||
+          `${user.first_name} ${user.last_name}`.trim(),
         correo: user.email_addresses[0]?.email_address ?? "",
         imagen: user.image_url ?? null,
         fechaCreacion: new Date(user.created_at),
