@@ -81,7 +81,9 @@ export async function POST(req: NextRequest) {
       const user = evt.data;
 
       const usuarioActualizado = {
-        nombre: `${user.first_name} ${user.last_name}`.trim(),
+        nombre:
+          user.username?.trim() ||
+          `${user.first_name} ${user.last_name}`.trim(),
         correo: user.email_addresses[0]?.email_address ?? "",
         imagen: user.image_url ?? null,
       };
