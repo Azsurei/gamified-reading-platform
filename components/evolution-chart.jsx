@@ -29,7 +29,7 @@ const EvolucionChart = ({ data }) => {
         return `
           <b>${item.titulo}</b><br/>
           Efectividad: <b>${this.y}%</b><br/>
-          Reintento: ${item.numeroReintento}<br/>
+          Intento: ${item.numeroReintento}<br/>
           Fecha: ${item.fecha}
         `;
       },
