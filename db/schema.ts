@@ -18,7 +18,7 @@ export const usuario = pgTable("usuario", {
   fechaCreacion: timestamp("fecha_creacion", { mode: "date" })
     .defaultNow()
     .notNull(),
-  xpGanadoTotal: integer("xp_ganado_total").default(0),
+  xpGanadoTotal: integer("xp_ganado_total").default(100),
   xpGanado: integer("xp_ganado").default(0), // solo lo ganado por actividades
   xpGastado: integer("xp_gastado").default(0), // lo gastado en la tienda
   numeroTop3: integer("numero_top3").default(0),

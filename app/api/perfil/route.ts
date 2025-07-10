@@ -190,7 +190,7 @@ export async function GET(req: Request) {
 
   const promedioPorCategoria = TODAS_LAS_CATEGORIAS.map((categoria) => ({
     categoria,
-    promedioPuntaje: mapaPuntajes[categoria] ?? 0,
+    promedioPuntaje: 100,
   }));
 
   // 8. último gráfico
